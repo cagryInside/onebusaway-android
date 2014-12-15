@@ -34,11 +34,13 @@ import org.onebusaway.android.map.MapModeController;
 import org.onebusaway.android.map.MapParams;
 import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
 import org.onebusaway.android.region.ObaRegionsTask;
+import org.onebusaway.android.report.open311.Open311Manager;
+import org.onebusaway.android.report.open311.models.Open311Option;
+import org.onebusaway.android.report.ui.ReportActivity;
 import org.onebusaway.android.tripservice.TripService;
 import org.onebusaway.android.util.FragmentUtils;
 import org.onebusaway.android.util.LocationUtil;
 import org.onebusaway.android.util.PreferenceHelp;
-import org.onebusaway.android.util.RegionUtils;
 import org.onebusaway.android.util.UIHelp;
 
 import android.app.AlertDialog;
@@ -73,6 +75,7 @@ import android.view.animation.Transformation;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -276,6 +279,8 @@ public class HomeActivity extends ActionBarActivity
         autoShowWhatsNew();
 
         checkRegionStatus();
+
+        setupOpen311();
     }
 
     @Override
@@ -382,10 +387,10 @@ public class HomeActivity extends ActionBarActivity
                 break;
             case NAVDRAWER_ITEM_SEND_FEEDBACK:
                 Log.d(TAG, "TODO - show send feedback fragment");
-                ObaAnalytics
-                        .reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                                getString(R.string.analytics_action_button_press),
-                                getString(R.string.analytics_label_button_press_feedback));
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_action_button_press),
+                        getString(R.string.analytics_label_button_press_feedback));
+                goToSendFeedBack();
                 break;
         }
         invalidateOptionsMenu();
@@ -799,6 +804,15 @@ public class HomeActivity extends ActionBarActivity
         }
     }
 
+    private void goToSendFeedBack() {
+        if (mFocusedStop != null){
+            ReportActivity.start(this, mFocusedStopId, mFocusedStop.getLatitude(), mFocusedStop.getLongitude());
+        } else {
+            Location loc = LocationUtil.getLocation(this, mGoogleApiClient);
+            ReportActivity.start(this, null, loc.getLatitude(), loc.getLongitude());
+        }
+    }
+
     /**
      * Checks region status, which can potentially including forcing a reload of region
      * info from the server.  Also includes auto-selection of closest region.
@@ -1066,6 +1080,20 @@ public class HomeActivity extends ActionBarActivity
                 // We don't have an ObaStop or ObaRoute mapping, so just pass in null for those
                 updateArrivalListFragment(stopId, null, null);
             }
+        }
+    }
+
+    private void setupOpen311() {
+        ObaRegion mCurrentRegion = Application.get().getCurrentRegion();
+
+        if (mCurrentRegion != null) {
+            //Init Open311
+            /**
+             * Test urls and API keys
+             */
+//            Open311Manager.initOpen311WithOption(new Open311Option("http://www.publicstuff.com/api/open311/", "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
+            Open311Manager.initOpen311WithOption(new Open311Option(mCurrentRegion.getOpen311Url(), "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
+            Open311Manager.initOpen311WithOption(new Open311Option("http://10.226.3.219:5000/", "12345", "miamidade.gov"));
         }
     }
 

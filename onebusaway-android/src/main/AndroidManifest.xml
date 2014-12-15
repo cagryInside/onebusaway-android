@@ -133,6 +133,9 @@
         <activity android:name="org.onebusaway.android.ui.RegionsActivity"/>
         <activity android:name="org.onebusaway.android.ui.AgenciesActivity"/>
 
+        <activity android:name="org.onebusaway.android.report.ui.ReportActivity"/>
+        <activity android:name="org.onebusaway.android.report.ui.InfrastructureIssueActivity"/>
+
         <!-- Provider is defined in build.gradle flavors -->
         <provider
                 android:name="org.onebusaway.android.provider.ObaProvider"
