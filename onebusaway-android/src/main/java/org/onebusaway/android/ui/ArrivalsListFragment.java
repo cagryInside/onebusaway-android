@@ -16,20 +16,6 @@
  */
 package org.onebusaway.android.ui;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.ObaApi;
-import org.onebusaway.android.io.elements.ObaArrivalInfo;
-import org.onebusaway.android.io.elements.ObaRoute;
-import org.onebusaway.android.io.elements.ObaSituation;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
-import org.onebusaway.android.provider.ObaContract;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.LocationUtil;
-import org.onebusaway.android.util.MyTextUtils;
-import org.onebusaway.android.util.UIHelp;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -60,6 +46,21 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.io.ObaApi;
+import org.onebusaway.android.io.elements.ObaArrivalInfo;
+import org.onebusaway.android.io.elements.ObaRoute;
+import org.onebusaway.android.io.elements.ObaSituation;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
+import org.onebusaway.android.provider.ObaContract;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.LocationUtil;
+import org.onebusaway.android.util.MyTextUtils;
+import org.onebusaway.android.util.UIHelp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,7 +224,7 @@ public class ArrivalsListFragment extends ListFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater,
-            ViewGroup root, Bundle savedInstanceState) {
+                             ViewGroup root, Bundle savedInstanceState) {
         if (root == null) {
             // Currently in a layout without a container, so no
             // reason to create our view.
@@ -362,7 +363,7 @@ public class ArrivalsListFragment extends ListFragment
     //
     @Override
     public void onLoadFinished(Loader<ObaArrivalInfoResponse> loader,
-            final ObaArrivalInfoResponse result) {
+                               final ObaArrivalInfoResponse result) {
         UIHelp.showProgress(this, false);
 
         ObaArrivalInfo[] info = null;
@@ -769,6 +770,11 @@ public class ArrivalsListFragment extends ListFragment
         // Apparently we can't rely on onPrepareOptionsMenu to set the
         // menus like we did before...
         getActivity().supportInvalidateOptionsMenu();
+
+        //Analytics
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                "edit_field", "Edited Bookmark");
+
         return mFavorite;
     }
 
@@ -966,6 +972,9 @@ public class ArrivalsListFragment extends ListFragment
         getArrivalsLoader().incrementMinutesAfter();
         mLoadedMoreArrivals = true;
         refresh();
+
+        //Analytics
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked load more arrivals button");
     }
 
     //

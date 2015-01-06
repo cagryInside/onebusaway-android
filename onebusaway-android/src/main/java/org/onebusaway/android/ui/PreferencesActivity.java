@@ -19,6 +19,7 @@ package org.onebusaway.android.ui;
 import org.onebusaway.android.BuildConfig;
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.region.ObaRegionsTask;
 
 import android.content.SharedPreferences;
@@ -172,12 +173,21 @@ public class PreferencesActivity extends PreferenceActivity
             task.execute();
 
             // Wait to change the region preference description until the task callback
+
+            //Analytics
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "ExperimentalRegionCell: " + experimentalServers);
         } else if (key.equals(getString(R.string.preference_key_oba_api_url))) {
             // Change the region preference description to show we're not using a region
             changePreferenceSummary(key);
         } else if (key.equalsIgnoreCase(getString(R.string.preference_key_preferred_units))) {
             // Change the preferred units description
             changePreferenceSummary(key);
+        } else if (key.equalsIgnoreCase(getString(R.string.preference_key_auto_select_region))){
+            //Analytics
+            boolean autoSelect = settings
+                    .getBoolean(getString(R.string.preference_key_auto_select_region), false);
+
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Set region automatically: " + autoSelect);
         }
     }
 

@@ -17,6 +17,7 @@ package org.onebusaway.android.ui;
 
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.provider.ObaContract;
 
 import android.database.Cursor;
@@ -101,6 +102,9 @@ public class MyStarredStopsFragment extends MyStopListFragmentBase {
         @Override
         protected void doClear() {
             ObaContract.Stops.markAsFavorite(getActivity(), ObaContract.Stops.CONTENT_URI, false);
+            //Analytics
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                    "edit_field", "Edited Bookmark Group Deleted");
         }
     }
 }

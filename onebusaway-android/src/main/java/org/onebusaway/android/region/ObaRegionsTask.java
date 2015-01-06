@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationClient;
 import org.onebusaway.android.BuildConfig;
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.io.elements.ObaRegion;
 import org.onebusaway.android.util.LocationUtil;
 import org.onebusaway.android.util.RegionUtils;
@@ -162,6 +163,8 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "Detected closest region '" + closestRegion.getName() + "'");
                     }
+                    //Analytics
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(), "configured_region_auto", "Set Region Automatically: " + closestRegion.getName());
                     doCallback(true);
                 } else {
                     //No region has been set, and we couldn't find a usable region based on RegionUtil.isRegionUsable()
@@ -176,6 +179,9 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                     Log.d(TAG, "Detected closer region '" + closestRegion.getName()
                             + "', changed to this region.");
                 }
+
+                //Analytics
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(), "configured_region_auto", "Set Region Automatically: " + closestRegion.getName());
                 doCallback(true);
             } else {
                 doCallback(false);

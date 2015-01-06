@@ -16,29 +16,6 @@
  */
 package org.onebusaway.android.ui;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.onebusaway.android.BuildConfig;
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.elements.ObaRegion;
-import org.onebusaway.android.io.elements.ObaRoute;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
-import org.onebusaway.android.map.MapModeController;
-import org.onebusaway.android.map.MapParams;
-import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
-import org.onebusaway.android.region.ObaRegionsTask;
-import org.onebusaway.android.tripservice.TripService;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.LocationUtil;
-import org.onebusaway.android.util.PreferenceHelp;
-import org.onebusaway.android.util.UIHelp;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -68,6 +45,29 @@ import android.view.animation.Transformation;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import org.onebusaway.android.BuildConfig;
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.io.elements.ObaRegion;
+import org.onebusaway.android.io.elements.ObaRoute;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
+import org.onebusaway.android.map.MapModeController;
+import org.onebusaway.android.map.MapParams;
+import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
+import org.onebusaway.android.region.ObaRegionsTask;
+import org.onebusaway.android.tripservice.TripService;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.LocationUtil;
+import org.onebusaway.android.util.PreferenceHelp;
+import org.onebusaway.android.util.UIHelp;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -253,6 +253,7 @@ public class HomeActivity extends ActionBarActivity
         autoShowWhatsNew();
 
         checkRegionStatus();
+
     }
 
     @Override
@@ -262,6 +263,7 @@ public class HomeActivity extends ActionBarActivity
         if (mLocationClient != null && !mLocationClient.isConnected()) {
             mLocationClient.connect();
         }
+        ObaAnalytics.reportActivityStart(this);
     }
 
     @Override
@@ -280,6 +282,7 @@ public class HomeActivity extends ActionBarActivity
         if (mLocationClient != null && mLocationClient.isConnected()) {
             mLocationClient.disconnect();
         }
+        ObaAnalytics.reportActivityStop(this);
         super.onStop();
     }
 
@@ -303,29 +306,35 @@ public class HomeActivity extends ActionBarActivity
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_STARRED_STOPS) {
                     showStarredStopsFragment();
                     mCurrentNavDrawerPosition = item;
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Starred Stops Link");
                 }
                 break;
             case NAVDRAWER_ITEM_NEARBY:
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_NEARBY) {
                     showMapFragment();
                     mCurrentNavDrawerPosition = item;
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Nearby Item Link");
                 }
                 break;
             case NAVDRAWER_ITEM_MY_REMINDERS:
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_MY_REMINDERS) {
                     showMyRemindersFragment();
                     mCurrentNavDrawerPosition = item;
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked My Reminders Link");
                 }
                 break;
             case NAVDRAWER_ITEM_SETTINGS:
                 Intent preferences = new Intent(HomeActivity.this, PreferencesActivity.class);
                 startActivity(preferences);
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Settings Link");
                 break;
             case NAVDRAWER_ITEM_HELP:
                 showDialog(HELP_DIALOG);
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Help Link");
                 break;
             case NAVDRAWER_ITEM_SEND_FEEDBACK:
                 Log.d(TAG, "TODO - show send feedback fragment");
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Send Feedback Link");
                 break;
         }
     }
@@ -440,6 +449,8 @@ public class HomeActivity extends ActionBarActivity
         final int id = item.getItemId();
         if (id == R.id.search) {
             onSearchRequested();
+            //Analytics
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Search box selected");
             return true;
         } else if (id == R.id.find_route) {
             Intent myIntent = new Intent(this, MyRoutesActivity.class);
@@ -563,6 +574,15 @@ public class HomeActivity extends ActionBarActivity
             mFocusedStopId = stop.getId();
             // A stop on the map was just tapped, show it in the sliding panel
             updateArrivalListFragment(stop.getId(), stop, routes);
+
+            //Track analytics
+            Location myLocation = LocationUtil.getLocation2(this,mLocationClient);
+            Location stopLocation = stop.getLocation();
+
+            ObaRegion region = Application.get().getCurrentRegion();
+            if(region != null && region.getName() != null)
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Loaded StopInfo from " + region.getName());
+            ObaAnalytics.trackBusStopDistance(myLocation, stopLocation);
         } else {
             // A particular stop lost focus (e.g., user tapped on the map), so hide the panel
             // and clear the currently focused stopId
@@ -756,6 +776,7 @@ public class HomeActivity extends ActionBarActivity
             public void onClick(View arg0) {
                 if (mMapFragment != null) {
                     mMapFragment.setMyLocation(true, true);
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked My Location Button");
                 }
             }
         };

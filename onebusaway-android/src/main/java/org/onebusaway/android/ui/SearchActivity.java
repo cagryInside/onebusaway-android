@@ -15,6 +15,7 @@
  */
 package org.onebusaway.android.ui;
 
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.util.UIHelp;
 
 import android.app.SearchManager;
@@ -26,6 +27,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+
 
 public class SearchActivity extends ActionBarActivity {
     //private static final String TAG = "SearchActivity";
@@ -36,6 +39,18 @@ public class SearchActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         UIHelp.setupActionBar(this);
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ObaAnalytics.reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ObaAnalytics.reportActivityStop(this);
     }
 
     @Override
@@ -64,6 +79,8 @@ public class SearchActivity extends ActionBarActivity {
         } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // handles a search query
             String query = intent.getStringExtra(SearchManager.QUERY);
+            //Analytics
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Search button clicked");
             doSearch(query);
         }
     }

@@ -16,10 +16,6 @@
 
 package org.onebusaway.android.ui;
 
-import org.onebusaway.android.provider.ObaContract;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.UIHelp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,6 +23,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.provider.ObaContract;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.UIHelp;
 
 
 public class RouteInfoActivity extends ActionBarActivity {
@@ -55,6 +56,18 @@ public class RouteInfoActivity extends ActionBarActivity {
 
             fm.beginTransaction().add(android.R.id.content, list).commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ObaAnalytics.reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ObaAnalytics.reportActivityStop(this);
     }
 
     @Override

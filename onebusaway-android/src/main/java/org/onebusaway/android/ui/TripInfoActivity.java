@@ -15,13 +15,6 @@
  */
 package org.onebusaway.android.ui;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.provider.ObaContract;
-import org.onebusaway.android.tripservice.TripService;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.MyTextUtils;
-import org.onebusaway.android.util.UIHelp;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
@@ -53,6 +46,14 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.onebusaway.android.R;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.provider.ObaContract;
+import org.onebusaway.android.tripservice.TripService;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.MyTextUtils;
+import org.onebusaway.android.util.UIHelp;
 
 import java.util.List;
 
@@ -228,6 +229,18 @@ public class TripInfoActivity extends ActionBarActivity {
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
+        }
+
+        @Override
+        public void onStart() {
+            ObaAnalytics.reportActivityStart(getActivity());
+            super.onStart();
+        }
+
+        @Override
+        public void onStop() {
+            ObaAnalytics.reportActivityStop(getActivity());
+            super.onStop();
         }
 
         private boolean initFromBundle(Bundle bundle) {

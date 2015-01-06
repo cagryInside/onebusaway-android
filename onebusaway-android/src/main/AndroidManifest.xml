@@ -44,6 +44,10 @@
                 android:name="android.app.default_searchable"
                 android:value="org.onebusaway.android.ui.SearchActivity"/>
 
+        <!-- Google Analytics Version v4 needs this value for easy tracking -->
+        <meta-data android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/app_tracker" />
+
         <activity
                 android:name="org.onebusaway.android.ui.SearchActivity"
                 android:launchMode="singleTop">

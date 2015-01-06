@@ -22,6 +22,7 @@ import com.google.android.gms.location.LocationClient;
 import org.onebusaway.android.BuildConfig;
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.io.elements.ObaRegion;
 import org.onebusaway.android.region.ObaRegionsLoader;
 import org.onebusaway.android.util.ArrayAdapter;
@@ -135,6 +136,9 @@ public class RegionsFragment extends ListFragment
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "User manually set region to '" + region.getName() + "'.");
         }
+
+        //Analytics
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "set_region", "Set Region: " + region.getName());
 
         NavHelp.goHome(getActivity());
     }

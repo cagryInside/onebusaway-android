@@ -15,13 +15,6 @@
  */
 package org.onebusaway.android.app;
 
-import org.onebusaway.android.BuildConfig;
-import org.onebusaway.android.R;
-import org.onebusaway.android.io.ObaApi;
-import org.onebusaway.android.io.elements.ObaRegion;
-import org.onebusaway.android.provider.ObaContract;
-import org.onebusaway.android.util.PreferenceHelp;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -31,7 +24,19 @@ import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
+import org.onebusaway.android.BuildConfig;
+import org.onebusaway.android.R;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.io.ObaApi;
+import org.onebusaway.android.io.elements.ObaRegion;
+import org.onebusaway.android.provider.ObaContract;
+import org.onebusaway.android.util.PreferenceHelp;
+
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Application extends android.app.Application {
@@ -45,6 +50,18 @@ public class Application extends android.app.Application {
 
     private static Application mApp;
 
+    private static final String PROPERTY_ID = "UA-57764191-1";
+
+    /**
+     * Google analytics tracker configs
+     */
+    public enum TrackerName {
+        APP_TRACKER, // Tracker used only in this app.
+        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+    }
+
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -54,6 +71,8 @@ public class Application extends android.app.Application {
 
         initOba();
         initObaRegion();
+
+        reportAnalytics();
     }
 
     @Override
@@ -208,5 +227,31 @@ public class Application extends android.app.Application {
         }
 
         ObaApi.getDefaultContext().setRegion(region);
+    }
+
+    public synchronized Tracker getTracker(TrackerName trackerId) {
+        if (!mTrackers.containsKey(trackerId)) {
+
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(R.xml.app_tracker)
+                    : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
+                    : analytics.newTracker(R.xml.global_tracker);
+            mTrackers.put(trackerId, t);
+        }
+        return mTrackers.get(trackerId);
+    }
+
+    private void reportAnalytics() {
+        if (getCustomApiUrl() == null && getCurrentRegion() != null) {
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                    "configured_region", "API Region: " + getCurrentRegion().getName());
+        } else {
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                    "configured_region", "API Region: " + getCustomApiUrl());
+        }
+        Boolean showExperimentalRegions = getCurrentRegion().getExperimental();
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                "configured_region", "API Region: " + (showExperimentalRegions ? "YES" : "NO"));
+
     }
 }

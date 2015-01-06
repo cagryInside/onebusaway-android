@@ -15,6 +15,7 @@
  */
 package org.onebusaway.android.ui;
 
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.io.elements.ObaRoute;
 import org.onebusaway.android.io.elements.ObaStop;
 import org.onebusaway.android.provider.ObaContract;
@@ -167,6 +168,18 @@ public class ArrivalsListActivity extends ActionBarActivity {
             }
             ft.commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        ObaAnalytics.reportActivityStart(this);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        ObaAnalytics.reportActivityStop(this);
+        super.onStop();
     }
 
     @Override
