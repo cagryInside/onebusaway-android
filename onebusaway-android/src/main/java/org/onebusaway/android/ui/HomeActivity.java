@@ -307,7 +307,7 @@ public class HomeActivity extends ActionBarActivity
                     showStarredStopsFragment();
                     mCurrentNavDrawerPosition = item;
                     ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_action_button_press),
                             getString(R.string.analytics_label_button_press_star));
                 }
                 break;
@@ -316,7 +316,7 @@ public class HomeActivity extends ActionBarActivity
                     showMapFragment();
                     mCurrentNavDrawerPosition = item;
                     ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_action_button_press),
                             getString(R.string.analytics_label_button_press_nearby));
                 }
                 break;
@@ -325,7 +325,7 @@ public class HomeActivity extends ActionBarActivity
                     showMyRemindersFragment();
                     mCurrentNavDrawerPosition = item;
                     ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_action_button_press),
                             getString(R.string.analytics_label_button_press_reminders));
                 }
                 break;
@@ -333,19 +333,19 @@ public class HomeActivity extends ActionBarActivity
                 Intent preferences = new Intent(HomeActivity.this, PreferencesActivity.class);
                 startActivity(preferences);
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                        getString(R.string.analytics_label_button_press),
-                        getString(R.string.analytics_label_button_press_reminders));
+                        getString(R.string.analytics_action_button_press),
+                        getString(R.string.analytics_label_button_press_settings));
                 break;
             case NAVDRAWER_ITEM_HELP:
                 showDialog(HELP_DIALOG);
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                        getString(R.string.analytics_label_button_press),
+                        getString(R.string.analytics_action_button_press),
                         getString(R.string.analytics_label_button_press_help));
                 break;
             case NAVDRAWER_ITEM_SEND_FEEDBACK:
                 Log.d(TAG, "TODO - show send feedback fragment");
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                        getString(R.string.analytics_label_button_press),
+                        getString(R.string.analytics_action_button_press),
                         getString(R.string.analytics_label_button_press_feedback));
                 break;
         }

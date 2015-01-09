@@ -79,6 +79,18 @@ public class PreferencesActivity extends PreferenceActivity
         changePreferenceSummary(getString(R.string.preference_key_preferred_units));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ObaAnalytics.reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ObaAnalytics.reportActivityStop(this);
+    }
+
     /**
      * Changes the summary of a preference based on a given preference key
      *
