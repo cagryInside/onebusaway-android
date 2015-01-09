@@ -244,14 +244,20 @@ public class Application extends android.app.Application {
     private void reportAnalytics() {
         if (getCustomApiUrl() == null && getCurrentRegion() != null) {
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
-                    "configured_region", "API Region: " + getCurrentRegion().getName());
+                   getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
+                            + getCurrentRegion().getName());
         } else {
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
-                    "configured_region", "API Region: " + getCustomApiUrl());
+                    getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
+                            + getCustomApiUrl());
         }
-        Boolean showExperimentalRegions = getCurrentRegion().getExperimental();
-        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
-                "configured_region", "API Region: " + (showExperimentalRegions ? "YES" : "NO"));
+
+        if (getCurrentRegion() != null) {
+            Boolean showExperimentalRegions = getCurrentRegion().getExperimental();
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                    getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
+                            + (showExperimentalRegions ? "YES" : "NO"));
+        }
 
     }
 }

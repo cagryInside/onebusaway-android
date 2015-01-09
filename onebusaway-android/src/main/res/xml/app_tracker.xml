@@ -26,10 +26,26 @@
     <!-- How long a session exists before giving up -->
     <integer name="ga_sessionTimeout">500</integer>
 
-    <string name="org.onebusaway.android.ui.HomeActivity">HomeActivity</string>
-    <string name="org.onebusaway.android.ui.SearchActivity">SearchActivity</string>
-    <string name="org.onebusaway.android.ui.ArrivalsListActivity">ArrivalsListActivity</string>
-    <string name="org.onebusaway.android.ui.RouteInfoActivity">RouteInfoActivity</string>
-    <string name="org.onebusaway.android.ui.TripInfoActivity">TripInfoActivity</string>
-
+    <!-- The screen names that will appear in reports -->
+    <screenName name="org.onebusaway.android.ui.SearchActivity">
+        SearchActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.HomeActivity">
+        HomeActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.RouteInfoActivity">
+        RouteInfoActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.TripInfoActivity">
+        TripInfoActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.MyStopsActivity">
+        MyStopsActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.ArrivalsListActivity">
+        ArrivalsListActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.PreferencesActivity">
+        PreferencesActivity
+    </screenName>
 </resources>

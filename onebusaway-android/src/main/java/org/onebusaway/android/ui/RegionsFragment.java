@@ -138,7 +138,9 @@ public class RegionsFragment extends ListFragment
         }
 
         //Analytics
-        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "set_region", "Set Region: " + region.getName());
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                getString(R.string.analytics_action_set_region),
+                getString(R.string.analytics_label_set_region)+ region.getName());
 
         NavHelp.goHome(getActivity());
     }

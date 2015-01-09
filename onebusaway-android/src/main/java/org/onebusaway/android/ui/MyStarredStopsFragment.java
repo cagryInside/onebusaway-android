@@ -57,8 +57,14 @@ public class MyStarredStopsFragment extends MyStopListFragmentBase {
     }
 
     @Override
+    public void onStart() {
+        ObaAnalytics.reportFragmentStart(this);
+        super.onStart();
+    }
+
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
-            ContextMenuInfo menuInfo) {
+                                    ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, CONTEXT_MENU_DELETE, 0, R.string.my_context_remove_star);
     }
@@ -104,7 +110,8 @@ public class MyStarredStopsFragment extends MyStopListFragmentBase {
             ObaContract.Stops.markAsFavorite(getActivity(), ObaContract.Stops.CONTENT_URI, false);
             //Analytics
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                    "edit_field", "Edited Bookmark Group Deleted");
+                    getString(R.string.analytics_action_edit_field),
+                    getString(R.string.analytics_label_edit_field_bookmark_delete));
         }
     }
 }

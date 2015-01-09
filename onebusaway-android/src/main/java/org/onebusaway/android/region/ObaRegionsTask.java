@@ -103,7 +103,7 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
      *                           task, false if it should not
      */
     public ObaRegionsTask(Context context, ObaRegionsTask.Callback callback, boolean force,
-            boolean showProgressDialog) {
+                          boolean showProgressDialog) {
         this.mContext = context;
         this.mCallback = callback;
         mForceReload = force;
@@ -164,7 +164,10 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                         Log.d(TAG, "Detected closest region '" + closestRegion.getName() + "'");
                     }
                     //Analytics
-                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(), "configured_region_auto", "Set Region Automatically: " + closestRegion.getName());
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                            mContext.getString(R.string.analytics_action_configured_region_auto),
+                            mContext.getString(R.string.analytics_label_region_auto)
+                                    + closestRegion.getName());
                     doCallback(true);
                 } else {
                     //No region has been set, and we couldn't find a usable region based on RegionUtil.isRegionUsable()
@@ -181,7 +184,10 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                 }
 
                 //Analytics
-                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(), "configured_region_auto", "Set Region Automatically: " + closestRegion.getName());
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                        mContext.getString(R.string.analytics_action_configured_region_auto)
+                        , mContext.getString(R.string.analytics_label_region_auto)
+                                + closestRegion.getName());
                 doCallback(true);
             } else {
                 doCallback(false);

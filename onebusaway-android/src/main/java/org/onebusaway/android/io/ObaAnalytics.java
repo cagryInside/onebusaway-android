@@ -16,14 +16,18 @@
 package org.onebusaway.android.io;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
+import org.onebusaway.android.util.PreferenceHelp;
 
 /**
  * Analytics class for tracking the app
@@ -33,6 +37,11 @@ import org.onebusaway.android.app.Application;
 
 public class ObaAnalytics {
 
+    private static final float LOCATION_ACCURACY_THRESHOLD = 0.1f;
+
+    /**
+     * To measure the distance when the bus stop tapped.
+     */
     public enum ObaStopDistance {
 
         CLOSE("CLOSE"), MEDIUM("MEDIUM"), FAR("FAR");
@@ -52,10 +61,14 @@ public class ObaAnalytics {
         }
     }
 
+    /**
+     * Event categories for segmentation
+     * app_settings, ui_action, submit is similar with OBA IOS
+     */
     public enum ObaEventCategory {
 
-        APP_SETTINGS("app_settings"), UI_ACTION("ui_action"), ACCESSIBILITY("accessibility"),
-        SUBMIT("submit"), STOP_ACTION("stop_action");
+        APP_SETTINGS("app_settings"), UI_ACTION("ui_action"),
+        SUBMIT("`"), STOP_ACTION("stop_action_region[");
 
         private final String stringValue;
 
@@ -68,57 +81,62 @@ public class ObaAnalytics {
         }
     }
 
-    public static void reportEventWithCategory(String category, String action, String label){
-        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory(category)
-                .setAction(action)
-                .setLabel(label)
-                .build());
-    }
-
-    public static void trackBusStop(String stopName) {
-
-        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Bus Stop")
-                .setAction("Search")
-                .setLabel(stopName)
-                .setValue(1)
-                .build());
-    }
-
-    public static void trackBusStopByRegion(String region) {
-
-        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Bus Stop")
-                .setAction("Search")
-                .setLabel(region)
-                .setValue(1)
-                .build());
-    }
-
-    public static void trackBusStopDistance(Location myLocation, Location stopLocation) {
-        float distanceInMeters = myLocation.distanceTo(stopLocation);
-        ObaStopDistance stopDistance = null;
-
-        if (distanceInMeters < ObaStopDistance.DISTANCE_CLOSE) {
-            stopDistance = ObaStopDistance.CLOSE;
-        } else if (distanceInMeters < ObaStopDistance.DISTANCE_MEDIUM) {
-            stopDistance = ObaStopDistance.MEDIUM;
-        } else {
-            stopDistance = ObaStopDistance.FAR;
+    /**
+     * Reports events with categories. Helps segmentation in GA admin console.
+     *
+     * @param category category name
+     * @param action   action name
+     * @param label    label name
+     */
+    public static void reportEventWithCategory(String category, String action, String label) {
+        if (isAnalyticsActive()) {
+            Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(category)
+                    .setAction(action)
+                    .setLabel(label)
+                    .build());
         }
+    }
 
-        Log.v("stopDistance ----> ", stopDistance.toString());
-        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-        tracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Bus Stop")
-                .setAction("Search")
-                .setLabel(stopDistance.toString())
-                .setValue(1)
-                .build());
+    /**
+     * Tracks stop tap distance between bus stop location and users current location
+     *
+     * @param regionName   region name for category
+     * @param stopId       for action
+     * @param myLocation   the users location
+     * @param stopLocation tapped stop location
+     */
+    public static void trackBusStopDistance(String regionName, String stopId, Location myLocation, Location stopLocation) {
+        if (isAnalyticsActive()) {
+            try {
+                if (myLocation.getAccuracy() > LOCATION_ACCURACY_THRESHOLD) {
+
+                    float distanceInMeters = myLocation.distanceTo(stopLocation);
+                    ObaStopDistance stopDistance = null;
+
+                    if (distanceInMeters < ObaStopDistance.DISTANCE_CLOSE) {
+                        stopDistance = ObaStopDistance.CLOSE;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_MEDIUM) {
+                        stopDistance = ObaStopDistance.MEDIUM;
+                    } else {
+                        stopDistance = ObaStopDistance.FAR;
+                    }
+
+                    Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+                    tracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(ObaEventCategory.STOP_ACTION.toString() + regionName + "]")
+                            .setAction("Stop Id: " + stopId)
+                            .setLabel("Search Distance: " + stopDistance.toString())
+                            .setValue(1)
+                            .build());
+                }
+
+            } catch (Exception e) {
+                //If location comes null
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -127,7 +145,9 @@ public class ObaAnalytics {
      * @param activity
      */
     public static void reportActivityStart(Activity activity) {
-        GoogleAnalytics.getInstance(activity).reportActivityStart(activity);
+        if (isAnalyticsActive()) {
+            GoogleAnalytics.getInstance(activity).reportActivityStart(activity);
+        }
     }
 
     /**
@@ -136,7 +156,30 @@ public class ObaAnalytics {
      * @param activity
      */
     public static void reportActivityStop(Activity activity) {
-        GoogleAnalytics.getInstance(activity).reportActivityStop(activity);
+        if (isAnalyticsActive()) {
+            GoogleAnalytics.getInstance(activity).reportActivityStop(activity);
+        }
+    }
+
+    /**
+     * For reporting fragments on Start
+     *
+     * @param fragment
+     */
+    public static void reportFragmentStart(Fragment fragment) {
+        if (isAnalyticsActive()) {
+            Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+            tracker.setScreenName(fragment.getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+    }
+
+    /**
+     * @return is GA enabled or disabled from settings
+     */
+    private static Boolean isAnalyticsActive() {
+        SharedPreferences settings = Application.getPrefs();
+        return settings.getBoolean(Application.get().getString(R.string.preferences_key_analytics), Boolean.TRUE);
     }
 
 }

@@ -175,7 +175,9 @@ public class PreferencesActivity extends PreferenceActivity
             // Wait to change the region preference description until the task callback
 
             //Analytics
-            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "ExperimentalRegionCell: " + experimentalServers);
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                    getString(R.string.analytics_action_button_press),
+                    getString(R.string.analytics_label_button_press_experimental) + experimentalServers);
         } else if (key.equals(getString(R.string.preference_key_oba_api_url))) {
             // Change the region preference description to show we're not using a region
             changePreferenceSummary(key);
@@ -187,7 +189,9 @@ public class PreferencesActivity extends PreferenceActivity
             boolean autoSelect = settings
                     .getBoolean(getString(R.string.preference_key_auto_select_region), false);
 
-            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Set region automatically: " + autoSelect);
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                    getString(R.string.analytics_action_button_press),
+                    getString(R.string.analytics_label_button_press_auto) + autoSelect);
         }
     }
 

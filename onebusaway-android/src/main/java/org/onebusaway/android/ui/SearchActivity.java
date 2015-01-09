@@ -15,6 +15,7 @@
  */
 package org.onebusaway.android.ui;
 
+import org.onebusaway.android.R;
 import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.util.UIHelp;
 
@@ -80,7 +81,9 @@ public class SearchActivity extends ActionBarActivity {
             // handles a search query
             String query = intent.getStringExtra(SearchManager.QUERY);
             //Analytics
-            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Search button clicked");
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                    getString(R.string.analytics_action_button_press),
+                    getString(R.string.analytics_label_button_press_search_button));
             doSearch(query);
         }
     }

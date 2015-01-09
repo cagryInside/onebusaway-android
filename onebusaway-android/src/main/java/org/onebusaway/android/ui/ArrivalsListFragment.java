@@ -357,6 +357,13 @@ public class ArrivalsListFragment extends ListFragment
         return new ArrivalsListLoader(getActivity(), mStopId);
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ObaAnalytics.reportFragmentStart(this);
+    }
+
     //
     // This is where the bulk of the initialization takes place to create
     // this screen.
@@ -773,7 +780,8 @@ public class ArrivalsListFragment extends ListFragment
 
         //Analytics
         ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
-                "edit_field", "Edited Bookmark");
+                getString(R.string.analytics_action_edit_field),
+                getString(R.string.analytics_label_edit_field));
 
         return mFavorite;
     }
@@ -974,7 +982,9 @@ public class ArrivalsListFragment extends ListFragment
         refresh();
 
         //Analytics
-        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked load more arrivals button");
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                getActivity().getString(R.string.analytics_action_button_press),
+                getActivity().getString(R.string.analytics_label_button_press));
     }
 
     //

@@ -176,9 +176,9 @@ public class HomeActivity extends ActionBarActivity
      * @param lon     The longitude of the map center.
      */
     public static final void start(Context context,
-            String focusId,
-            double lat,
-            double lon) {
+                                   String focusId,
+                                   double lat,
+                                   double lon) {
         context.startActivity(makeIntent(context, focusId, lat, lon));
     }
 
@@ -203,9 +203,9 @@ public class HomeActivity extends ActionBarActivity
      * @param lon     The longitude of the map center.
      */
     public static final Intent makeIntent(Context context,
-            String focusId,
-            double lat,
-            double lon) {
+                                          String focusId,
+                                          double lat,
+                                          double lon) {
         Intent myIntent = new Intent(context, HomeActivity.class);
         myIntent.putExtra(MapParams.STOP_ID, focusId);
         myIntent.putExtra(MapParams.CENTER_LAT, lat);
@@ -306,35 +306,47 @@ public class HomeActivity extends ActionBarActivity
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_STARRED_STOPS) {
                     showStarredStopsFragment();
                     mCurrentNavDrawerPosition = item;
-                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Starred Stops Link");
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_label_button_press_star));
                 }
                 break;
             case NAVDRAWER_ITEM_NEARBY:
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_NEARBY) {
                     showMapFragment();
                     mCurrentNavDrawerPosition = item;
-                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Nearby Item Link");
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_label_button_press_nearby));
                 }
                 break;
             case NAVDRAWER_ITEM_MY_REMINDERS:
                 if (mCurrentNavDrawerPosition != NAVDRAWER_ITEM_MY_REMINDERS) {
                     showMyRemindersFragment();
                     mCurrentNavDrawerPosition = item;
-                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked My Reminders Link");
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                            getString(R.string.analytics_label_button_press),
+                            getString(R.string.analytics_label_button_press_reminders));
                 }
                 break;
             case NAVDRAWER_ITEM_SETTINGS:
                 Intent preferences = new Intent(HomeActivity.this, PreferencesActivity.class);
                 startActivity(preferences);
-                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Settings Link");
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_label_button_press),
+                        getString(R.string.analytics_label_button_press_reminders));
                 break;
             case NAVDRAWER_ITEM_HELP:
                 showDialog(HELP_DIALOG);
-                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Help Link");
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_label_button_press),
+                        getString(R.string.analytics_label_button_press_help));
                 break;
             case NAVDRAWER_ITEM_SEND_FEEDBACK:
                 Log.d(TAG, "TODO - show send feedback fragment");
-                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked Send Feedback Link");
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_label_button_press),
+                        getString(R.string.analytics_label_button_press_feedback));
                 break;
         }
     }
@@ -450,7 +462,9 @@ public class HomeActivity extends ActionBarActivity
         if (id == R.id.search) {
             onSearchRequested();
             //Analytics
-            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Search box selected");
+            ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                    getString(R.string.analytics_action_button_press),
+                    getString(R.string.analytics_label_button_press_search_box));
             return true;
         } else if (id == R.id.find_route) {
             Intent myIntent = new Intent(this, MyRoutesActivity.class);
@@ -576,13 +590,22 @@ public class HomeActivity extends ActionBarActivity
             updateArrivalListFragment(stop.getId(), stop, routes);
 
             //Track analytics
-            Location myLocation = LocationUtil.getLocation2(this,mLocationClient);
+            Location myLocation = LocationUtil.getLocation2(this, mLocationClient);
             Location stopLocation = stop.getLocation();
 
             ObaRegion region = Application.get().getCurrentRegion();
-            if(region != null && region.getName() != null)
-                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Loaded StopInfo from " + region.getName());
-            ObaAnalytics.trackBusStopDistance(myLocation, stopLocation);
+            if (region != null && region.getName() != null) {
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_action_button_press),
+                        getString(R.string.analytics_label_button_press_stopinfo) + region.getName());
+
+                ObaAnalytics.trackBusStopDistance(region.getName(), stop.getId(), myLocation, stopLocation);
+            } else {
+                //Custom region
+                ObaAnalytics.trackBusStopDistance(getString(R.string.analytics_category_custom_region),
+                        stop.getId(), myLocation, stopLocation);
+            }
+
         } else {
             // A particular stop lost focus (e.g., user tapped on the map), so hide the panel
             // and clear the currently focused stopId
@@ -651,7 +674,7 @@ public class HomeActivity extends ActionBarActivity
     }
 
     private void updateArrivalListFragment(String stopId, ObaStop stop,
-            HashMap<String, ObaRoute> routes) {
+                                           HashMap<String, ObaRoute> routes) {
         FragmentManager fm = getSupportFragmentManager();
         Intent intent;
 
@@ -776,7 +799,9 @@ public class HomeActivity extends ActionBarActivity
             public void onClick(View arg0) {
                 if (mMapFragment != null) {
                     mMapFragment.setMyLocation(true, true);
-                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(), "button_press", "Clicked My Location Button");
+                    ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                            getString(R.string.analytics_action_button_press),
+                            getString(R.string.analytics_label_button_press_location));
                 }
             }
         };
