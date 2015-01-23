@@ -47,14 +47,14 @@ public class ObaAnalytics {
      */
     public enum ObaStopDistance {
 
-        DISTANCE_1("00000-00050m - User Distance", 50),
-        DISTANCE_2("00050-00100m - User Distance", 100),
-        DISTANCE_3("00100-00200m - User Distance", 200),
-        DISTANCE_4("00200-00400m - User Distance", 400),
-        DISTANCE_5("00400-00800m - User Distance", 800),
-        DISTANCE_6("00800-01600m - User Distance", 1600),
-        DISTANCE_7("01600-03200m - User Distance", 3200),
-        DISTANCE_8("03200-∞m - User Distance", 0);
+        DISTANCE_1("User Distance: 00000-00050m", 50),
+        DISTANCE_2("User Distance: 00050-00100m", 100),
+        DISTANCE_3("User Distance: 00100-00200m", 200),
+        DISTANCE_4("User Distance: 00200-00400m", 400),
+        DISTANCE_5("User Distance: 00400-00800m", 800),
+        DISTANCE_6("User Distance: 00800-01600m", 1600),
+        DISTANCE_7("User Distance: 01600-03200m", 3200),
+        DISTANCE_8("User Distance: 03200-∞m", 0);
 
         private final String stringValue;
         private final int distanceInMeters;
