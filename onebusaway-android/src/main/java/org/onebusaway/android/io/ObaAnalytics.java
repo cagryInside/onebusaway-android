@@ -27,7 +27,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
-import org.onebusaway.android.util.PreferenceHelp;
+import org.onebusaway.android.io.elements.ObaRegion;
 
 /**
  * Analytics class for tracking the app
@@ -37,27 +37,39 @@ import org.onebusaway.android.util.PreferenceHelp;
 
 public class ObaAnalytics {
 
-    private static final float LOCATION_ACCURACY_THRESHOLD = 0.1f;
+    /**
+     * Users location accuracy should be less then 100m
+     */
+    private static final float LOCATION_ACCURACY_THRESHOLD = 100f;
 
     /**
      * To measure the distance when the bus stop tapped.
      */
     public enum ObaStopDistance {
 
-        CLOSE("CLOSE"), MEDIUM("MEDIUM"), FAR("FAR");
+        DISTANCE_1("00000-00050m - User Distance", 50),
+        DISTANCE_2("00050-00100m - User Distance", 100),
+        DISTANCE_3("00100-00200m - User Distance", 200),
+        DISTANCE_4("00200-00400m - User Distance", 400),
+        DISTANCE_5("00400-00800m - User Distance", 800),
+        DISTANCE_6("00800-01600m - User Distance", 1600),
+        DISTANCE_7("01600-03200m - User Distance", 3200),
+        DISTANCE_8("03200-∞m - User Distance", 0);
 
         private final String stringValue;
+        private final int distanceInMeters;
 
-        //Distance in meters
-        public static final int DISTANCE_CLOSE = 75;
-        public static final int DISTANCE_MEDIUM = 200;
-
-        private ObaStopDistance(final String s) {
+        private ObaStopDistance(final String s, final int i) {
             stringValue = s;
+            distanceInMeters = i;
         }
 
         public String toString() {
             return stringValue;
+        }
+
+        public int getDistanceInMeters(){
+            return distanceInMeters;
         }
     }
 
@@ -68,7 +80,8 @@ public class ObaAnalytics {
     public enum ObaEventCategory {
 
         APP_SETTINGS("app_settings"), UI_ACTION("ui_action"),
-        SUBMIT("`"), STOP_ACTION("stop_action_region[");
+        SUBMIT("submit"), STOP_ACTION("stop_metrics"),
+        ACCESSIBILITY("accessibility");
 
         private final String stringValue;
 
@@ -91,10 +104,12 @@ public class ObaAnalytics {
     public static void reportEventWithCategory(String category, String action, String label) {
         if (isAnalyticsActive()) {
             Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+            String obaRegionName = getObaRegionName();
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(category)
                     .setAction(action)
                     .setLabel(label)
+                    .setCustomDimension(1, obaRegionName)
                     .build());
         }
     }
@@ -102,34 +117,46 @@ public class ObaAnalytics {
     /**
      * Tracks stop tap distance between bus stop location and users current location
      *
-     * @param regionName   region name for category
      * @param stopId       for action
      * @param myLocation   the users location
      * @param stopLocation tapped stop location
      */
-    public static void trackBusStopDistance(String regionName, String stopId, Location myLocation, Location stopLocation) {
+    public static void trackBusStopDistance(String stopId, Location myLocation, Location stopLocation) {
         if (isAnalyticsActive()) {
             try {
-                if (myLocation.getAccuracy() > LOCATION_ACCURACY_THRESHOLD) {
+                if (myLocation.getAccuracy() < LOCATION_ACCURACY_THRESHOLD) {
 
                     float distanceInMeters = myLocation.distanceTo(stopLocation);
                     ObaStopDistance stopDistance = null;
+                    String obaRegionName = getObaRegionName();
 
-                    if (distanceInMeters < ObaStopDistance.DISTANCE_CLOSE) {
-                        stopDistance = ObaStopDistance.CLOSE;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_MEDIUM) {
-                        stopDistance = ObaStopDistance.MEDIUM;
+                    if (distanceInMeters < ObaStopDistance.DISTANCE_1.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_1;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_2.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_2;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_3.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_3;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_4.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_4;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_5.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_5;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_6.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_6;
+                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_7.getDistanceInMeters()) {
+                        stopDistance = ObaStopDistance.DISTANCE_7;
                     } else {
-                        stopDistance = ObaStopDistance.FAR;
+                        stopDistance = ObaStopDistance.DISTANCE_8;
                     }
 
                     Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
                     tracker.send(new HitBuilders.EventBuilder()
-                            .setCategory(ObaEventCategory.STOP_ACTION.toString() + regionName + "]")
+                            .setCategory(ObaEventCategory.STOP_ACTION.toString())
                             .setAction("Stop Id: " + stopId)
-                            .setLabel("Search Distance: " + stopDistance.toString())
+                            .setLabel(stopDistance.toString())
                             .setValue(1)
+                            .setCustomDimension(1, obaRegionName)
                             .build());
+
                 }
 
             } catch (Exception e) {
@@ -182,4 +209,15 @@ public class ObaAnalytics {
         return settings.getBoolean(Application.get().getString(R.string.preferences_key_analytics), Boolean.TRUE);
     }
 
+    private static String getObaRegionName() {
+        String regionName = null;
+        ObaRegion region = Application.get().getCurrentRegion();
+
+        if (region != null && region.getName() != null) {
+            regionName = region.getName();
+        } else {
+            regionName = Application.get().getCustomApiUrl();
+        }
+        return regionName;
+    }
 }
