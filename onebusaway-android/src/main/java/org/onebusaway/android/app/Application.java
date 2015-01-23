@@ -226,6 +226,7 @@ public class Application extends android.app.Application {
             return;
         }
 
+
         ObaApi.getDefaultContext().setRegion(region);
     }
 
@@ -249,7 +250,7 @@ public class Application extends android.app.Application {
         } else {
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                     getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
-                            + getCustomApiUrl());
+                            + getString(R.string.analytics_label_custom_url));
         }
 
         if (getCurrentRegion() != null) {
@@ -258,6 +259,18 @@ public class Application extends android.app.Application {
                     getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
                             + (showExperimentalRegions ? "YES" : "NO"));
         }
+
+        Boolean experimentalRegions = getPrefs().getBoolean(getString(R.string.preference_key_experimental_regions),
+                Boolean.FALSE);
+        Boolean autoRegion = getPrefs().getBoolean(getString(R.string.preference_key_auto_select_region),
+                Boolean.FALSE);
+
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                getString(R.string.analytics_action_edit_general), getString(R.string.analytics_label_experimental)
+                        + (experimentalRegions ? "YES" : "NO"));
+        ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
+                getString(R.string.analytics_action_edit_general), getString(R.string.analytics_label_region_auto)
+                        + (autoRegion ? "YES" : "NO"));
 
     }
 }
