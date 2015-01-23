@@ -16,6 +16,7 @@
  */
 package org.onebusaway.android.ui;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -40,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.ImageButton;
@@ -264,6 +266,16 @@ public class HomeActivity extends ActionBarActivity
             mLocationClient.connect();
         }
         ObaAnalytics.reportActivityStart(this);
+
+        if (Build.VERSION.SDK_INT >= 14) {
+            AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+            Boolean isTalkBackEnabled = am.isTouchExplorationEnabled();
+            if (isTalkBackEnabled)
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.ACCESSIBILITY.toString(),
+                        getString(R.string.analytics_action_talk_back),
+                        getString(R.string.analytics_label_talkback) + getClass().getSimpleName()
+                                + " using TalkBack");
+        }
     }
 
     @Override
@@ -503,6 +515,9 @@ public class HomeActivity extends ActionBarActivity
                                             .getTwitterUrl();
                                 }
                                 UIHelp.goToUrl(HomeActivity.this, twitterUrl);
+                                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                                        getString(R.string.analytics_action_switch),
+                                        getString(R.string.analytics_label_app_switch));
                                 break;
                             case 1:
                                 AgenciesActivity.start(HomeActivity.this);
@@ -599,11 +614,6 @@ public class HomeActivity extends ActionBarActivity
                         getString(R.string.analytics_action_button_press),
                         getString(R.string.analytics_label_button_press_stopinfo) + region.getName());
 
-                ObaAnalytics.trackBusStopDistance(region.getName(), stop.getId(), myLocation, stopLocation);
-            } else {
-                //Custom region
-                ObaAnalytics.trackBusStopDistance(getString(R.string.analytics_category_custom_region),
-                        stop.getId(), myLocation, stopLocation);
             }
 
         } else {

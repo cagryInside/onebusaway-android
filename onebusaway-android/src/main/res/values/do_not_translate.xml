@@ -41,9 +41,14 @@
     <string name="analytics_action_button_press">button_press</string>
     <string name="analytics_action_set_region">set_region</string>
     <string name="analytics_action_edit_field">edit_field</string>
+    <string name="analytics_action_edit_general">general</string>
+    <string name="analytics_action_edit_startup">startup</string>
+    <string name="analytics_action_switch">app_switch</string>
+    <string name="analytics_action_problem">report_problem</string>
+    <string name="analytics_action_talk_back">talkback_on</string>
 
-    <string name="analytics_label_region">API Region: </string>
-    <string name="analytics_label_region_auto">Set Region Automatically: </string>
+    <string name="analytics_label_region">API Region:\u0020</string>
+    <string name="analytics_label_region_auto">Set Region Automatically:\u0020</string>
     <string name="analytics_label_button_press">Clicked load more arrivals button</string>
     <string name="analytics_label_button_press_star">Clicked Starred Stops Link</string>
     <string name="analytics_label_button_press_nearby">Clicked Nearby Item Link</string>
@@ -51,13 +56,18 @@
     <string name="analytics_label_button_press_settings">Clicked Settings Link</string>
     <string name="analytics_label_button_press_help">Clicked Help Link</string>
     <string name="analytics_label_button_press_feedback">Clicked Send Feedback Link</string>
-    <string name="analytics_label_button_press_stopinfo">Loaded StopInfo from </string>
+    <string name="analytics_label_button_press_stopinfo">Loaded StopInfo from\u0020</string>
     <string name="analytics_label_button_press_search_box">Search box selected</string>
     <string name="analytics_label_button_press_search_button">Search button clicked</string>
     <string name="analytics_label_button_press_location">Clicked My Location Button</string>
-    <string name="analytics_label_button_press_experimental">ExperimentalRegionCell: </string>
-    <string name="analytics_label_button_press_auto">Set region automatically: </string>
+    <string name="analytics_label_button_press_experimental">ExperimentalRegionCell:\u0020</string>
+    <string name="analytics_label_experimental">Show Experimental Regions:\u0020</string>
+    <string name="analytics_label_button_press_auto">Set region automatically:\u0020</string>
     <string name="analytics_label_edit_field">Edited Bookmark</string>
     <string name="analytics_label_edit_field_bookmark_delete">Edited Bookmark Group Deleted</string>
-    <string name="analytics_label_set_region">Set Region: </string>
+    <string name="analytics_label_set_region">Set Region:\u0020</string>
+    <string name="analytics_label_app_switch">Loaded Twitter via Web</string>
+    <string name="analytics_label_report_problem">Reported Problem</string>
+    <string name="analytics_label_talkback">Loaded view:\u0020</string>
+    <string name="analytics_label_custom_url">Custom URL</string>
 </resources>

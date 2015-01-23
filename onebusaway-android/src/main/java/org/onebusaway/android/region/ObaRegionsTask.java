@@ -167,7 +167,7 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                     ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                             mContext.getString(R.string.analytics_action_configured_region_auto),
                             mContext.getString(R.string.analytics_label_region_auto)
-                                    + closestRegion.getName());
+                                    + closestRegion.getName() + "; Old Region: null");
                     doCallback(true);
                 } else {
                     //No region has been set, and we couldn't find a usable region based on RegionUtil.isRegionUsable()
@@ -177,6 +177,7 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
             } else if (Application.get().getCurrentRegion() != null && closestRegion != null
                     && !Application.get().getCurrentRegion().equals(closestRegion)) {
                 //User is closer to a different region than the current region, so change to the closest region
+                String oldRegionName = Application.get().getCurrentRegion().getName();
                 Application.get().setCurrentRegion(closestRegion);
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Detected closer region '" + closestRegion.getName()
@@ -187,7 +188,8 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                         mContext.getString(R.string.analytics_action_configured_region_auto)
                         , mContext.getString(R.string.analytics_label_region_auto)
-                                + closestRegion.getName());
+                                + closestRegion.getName() + "; Old Region: "
+                                + oldRegionName);
                 doCallback(true);
             } else {
                 doCallback(false);

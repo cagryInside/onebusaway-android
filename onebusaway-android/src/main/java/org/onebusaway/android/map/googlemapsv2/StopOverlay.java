@@ -24,12 +24,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.onebusaway.android.R;
+import org.onebusaway.android.io.ObaAnalytics;
 import org.onebusaway.android.io.elements.ObaReferences;
 import org.onebusaway.android.io.elements.ObaRoute;
 import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.util.LocationUtil;
 
 import android.app.Activity;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -249,6 +252,10 @@ public class StopOverlay implements GoogleMap.OnMarkerClickListener, GoogleMap.O
 
         doFocusChange(stop);
 
+        // Report Stop distance metric
+        Location stopLocation = stop.getLocation();
+        Location myLocation = LocationUtil.getLocation2(mActivity, null);
+        ObaAnalytics.trackBusStopDistance(stop.getId(), myLocation, stopLocation);
         return true;
     }
 
