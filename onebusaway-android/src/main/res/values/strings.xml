@@ -416,9 +416,8 @@
     <string name="preferences_experimental_regions_disable_warning">Your current experimental region
         won\'t be available! Go ahead?
     </string>
-    <string name="preferences_analytics_title">Google Analytics</string>
-    <string name="preferences_analytics_summary">Enables reporting anonymous analytic
-    information</string>
+    <string name="preferences_analytics_title">Send anonymous usage data</string>
+    <string name="preferences_analytics_summary">Help us improve the app</string>
     <!-- Units -->
     <string name="feet_abbreviation">ft</string>
     <string name="miles_abbreviation">mi</string>

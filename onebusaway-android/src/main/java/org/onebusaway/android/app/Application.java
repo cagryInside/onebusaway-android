@@ -36,6 +36,7 @@ import org.onebusaway.android.provider.ObaContract;
 import org.onebusaway.android.util.PreferenceHelp;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -166,7 +167,7 @@ public class Application extends android.app.Application {
 
     private static final String HEXES = "0123456789abcdef";
 
-    private static String getHex(byte[] raw) {
+    public static String getHex(byte[] raw) {
         final StringBuilder hex = new StringBuilder(2 * raw.length);
         for (byte b : raw) {
             hex.append(HEXES.charAt((b & 0xF0) >> 4))
@@ -245,12 +246,21 @@ public class Application extends android.app.Application {
     private void reportAnalytics() {
         if (getCustomApiUrl() == null && getCurrentRegion() != null) {
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
-                   getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
+                    getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
                             + getCurrentRegion().getName());
         } else {
+            String customUrl = null;
+            MessageDigest digest = null;
+            try {
+                digest = MessageDigest.getInstance("SHA-1");
+                digest.update(getCustomApiUrl().getBytes());
+                customUrl = Application.getHex(digest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                customUrl = Application.get().getString(R.string.analytics_label_custom_url);
+            }
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                     getString(R.string.analytics_action_configured_region), getString(R.string.analytics_label_region)
-                            + getString(R.string.analytics_label_custom_url));
+                            + customUrl);
         }
 
         if (getCurrentRegion() != null) {

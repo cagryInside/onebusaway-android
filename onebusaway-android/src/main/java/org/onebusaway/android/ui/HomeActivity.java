@@ -272,7 +272,7 @@ public class HomeActivity extends ActionBarActivity
             Boolean isTalkBackEnabled = am.isTouchExplorationEnabled();
             if (isTalkBackEnabled)
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.ACCESSIBILITY.toString(),
-                        getString(R.string.analytics_action_talk_back),
+                        getString(R.string.analytics_action_touch_exploration),
                         getString(R.string.analytics_label_talkback) + getClass().getSimpleName()
                                 + " using TalkBack");
         }

@@ -29,6 +29,9 @@ import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Analytics class for tracking the app
  *
@@ -68,7 +71,7 @@ public class ObaAnalytics {
             return stringValue;
         }
 
-        public int getDistanceInMeters(){
+        public int getDistanceInMeters() {
             return distanceInMeters;
         }
     }
@@ -215,9 +218,20 @@ public class ObaAnalytics {
 
         if (region != null && region.getName() != null) {
             regionName = region.getName();
+        } else if (Application.get().getCustomApiUrl() != null) {
+            MessageDigest digest = null;
+            try {
+                digest = MessageDigest.getInstance("SHA-1");
+                digest.update(Application.get().getCustomApiUrl().getBytes());
+                regionName = Application.getHex(digest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                regionName = Application.get().getString(R.string.analytics_label_custom_url);
+            }
         } else {
-            regionName = Application.get().getCustomApiUrl();
+            regionName = Application.get().getString(R.string.analytics_label_custom_url);
         }
         return regionName;
     }
+
+
 }
