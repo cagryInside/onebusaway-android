@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -30,7 +29,6 @@ import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Analytics class for tracking the app
@@ -224,7 +222,7 @@ public class ObaAnalytics {
                 digest = MessageDigest.getInstance("SHA-1");
                 digest.update(Application.get().getCustomApiUrl().getBytes());
                 regionName = Application.getHex(digest.digest());
-            } catch (NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 regionName = Application.get().getString(R.string.analytics_label_custom_url);
             }
         } else {

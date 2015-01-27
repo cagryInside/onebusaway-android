@@ -16,7 +16,6 @@
  */
 package org.onebusaway.android.ui;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -71,6 +70,7 @@ import org.onebusaway.android.util.LocationUtil;
 import org.onebusaway.android.util.PreferenceHelp;
 import org.onebusaway.android.util.UIHelp;
 
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -614,6 +614,19 @@ public class HomeActivity extends ActionBarActivity
                         getString(R.string.analytics_action_button_press),
                         getString(R.string.analytics_label_button_press_stopinfo) + region.getName());
 
+            } else {
+                String customUrl = null;
+                MessageDigest digest = null;
+                try {
+                    digest = MessageDigest.getInstance("SHA-1");
+                    digest.update(Application.get().getCustomApiUrl().getBytes());
+                    customUrl = Application.getHex(digest.digest());
+                } catch (Exception e) {
+                    customUrl = Application.get().getString(R.string.analytics_label_custom_url);
+                }
+                ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.UI_ACTION.toString(),
+                        getString(R.string.analytics_action_button_press),
+                        getString(R.string.analytics_label_button_press_stopinfo) + customUrl);
             }
 
         } else {

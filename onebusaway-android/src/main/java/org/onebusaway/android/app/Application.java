@@ -36,7 +36,6 @@ import org.onebusaway.android.provider.ObaContract;
 import org.onebusaway.android.util.PreferenceHelp;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -255,7 +254,7 @@ public class Application extends android.app.Application {
                 digest = MessageDigest.getInstance("SHA-1");
                 digest.update(getCustomApiUrl().getBytes());
                 customUrl = Application.getHex(digest.digest());
-            } catch (NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 customUrl = Application.get().getString(R.string.analytics_label_custom_url);
             }
             ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
