@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="ga_sessionTimeout">300</integer>
 
-    <!--  The following value should be replaced with correct property id. -->
-    <string name="ga_trackingId">UA-57764191-1</string>
-    <string name="ga_logLevel">verbose</string>
+    <!-- Replace placeholder ID with your tracking ID -->
+    <string name="ga_trackingId">UA-57764191-2</string>
 
-    <!-- Enable automatic Activity measurement -->
     <bool name="ga_autoActivityTracking">true</bool>
     <bool name="ga_reportUncaughtExceptions">true</bool>
+
+    <bool name="ga_debug">true</bool>
+
+    <item
+        name="ga_dispatchPeriod"
+        format="integer"
+        type="integer">120
+    </item>
+
+    <string name="ga_sampleFrequency">90</string>
+
+    <bool name="ga_anonymizeIp">true</bool>
+    <bool name="ga_dryRun">false</bool>
+
+    <string name="ga_sampleFrequency">100.0</string>
+    <integer name="ga_sessionTimeout">500</integer>
 
     <!-- The screen names that will appear in reports -->
     <screenName name="org.onebusaway.android.ui.SearchActivity">
@@ -25,5 +38,11 @@
     </screenName>
     <screenName name="org.onebusaway.android.ui.MyStopsActivity">
         MyStopsActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.ArrivalsListActivity">
+        ArrivalsListActivity
+    </screenName>
+    <screenName name="org.onebusaway.android.ui.PreferencesActivity">
+        PreferencesActivity
     </screenName>
 </resources>

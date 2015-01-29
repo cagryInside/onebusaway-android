@@ -239,7 +239,6 @@ public class TripInfoActivity extends ActionBarActivity {
 
         @Override
         public void onStop() {
-            ObaAnalytics.reportActivityStop(getActivity());
             super.onStop();
         }
 

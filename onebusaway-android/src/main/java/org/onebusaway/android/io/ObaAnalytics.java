@@ -16,14 +16,17 @@
 package org.onebusaway.android.io;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import org.onebusaway.android.BuildConfig;
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
@@ -103,16 +106,23 @@ public class ObaAnalytics {
      * @param label    label name
      */
     public static void reportEventWithCategory(String category, String action, String label) {
-        if (isAnalyticsActive()) {
-            Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-            String obaRegionName = getObaRegionName();
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory(category)
-                    .setAction(action)
-                    .setLabel(label)
-                    .setCustomDimension(1, obaRegionName)
-                    .build());
-        }
+        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+        Tracker tracker2 = Application.get().getTracker(Application.TrackerName.GLOBAL_TRACKER);
+        String obaRegionName = getObaRegionName();
+
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .setCustomDimension(1, obaRegionName)
+                .build());
+
+        tracker2.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .setCustomDimension(1, obaRegionName)
+                .build());
     }
 
     /**
@@ -123,47 +133,55 @@ public class ObaAnalytics {
      * @param stopLocation tapped stop location
      */
     public static void trackBusStopDistance(String stopId, Location myLocation, Location stopLocation) {
-        if (isAnalyticsActive()) {
-            try {
-                if (myLocation.getAccuracy() < LOCATION_ACCURACY_THRESHOLD) {
+        try {
+            if (myLocation.getAccuracy() < LOCATION_ACCURACY_THRESHOLD) {
 
-                    float distanceInMeters = myLocation.distanceTo(stopLocation);
-                    ObaStopDistance stopDistance = null;
-                    String obaRegionName = getObaRegionName();
+                float distanceInMeters = myLocation.distanceTo(stopLocation);
+                ObaStopDistance stopDistance = null;
+                String obaRegionName = getObaRegionName();
 
-                    if (distanceInMeters < ObaStopDistance.DISTANCE_1.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_1;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_2.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_2;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_3.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_3;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_4.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_4;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_5.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_5;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_6.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_6;
-                    } else if (distanceInMeters < ObaStopDistance.DISTANCE_7.getDistanceInMeters()) {
-                        stopDistance = ObaStopDistance.DISTANCE_7;
-                    } else {
-                        stopDistance = ObaStopDistance.DISTANCE_8;
-                    }
-
-                    Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-                    tracker.send(new HitBuilders.EventBuilder()
-                            .setCategory(ObaEventCategory.STOP_ACTION.toString())
-                            .setAction("Stop Id: " + stopId)
-                            .setLabel(stopDistance.toString())
-                            .setValue(1)
-                            .setCustomDimension(1, obaRegionName)
-                            .build());
-
+                if (distanceInMeters < ObaStopDistance.DISTANCE_1.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_1;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_2.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_2;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_3.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_3;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_4.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_4;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_5.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_5;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_6.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_6;
+                } else if (distanceInMeters < ObaStopDistance.DISTANCE_7.getDistanceInMeters()) {
+                    stopDistance = ObaStopDistance.DISTANCE_7;
+                } else {
+                    stopDistance = ObaStopDistance.DISTANCE_8;
                 }
 
-            } catch (Exception e) {
-                //If location comes null
-                e.printStackTrace();
+                Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+                Tracker tracker2 = Application.get().getTracker(Application.TrackerName.GLOBAL_TRACKER);
+
+                tracker.send(new HitBuilders.EventBuilder()
+                        .setCategory(ObaEventCategory.STOP_ACTION.toString())
+                        .setAction("Stop Id: " + stopId)
+                        .setLabel(stopDistance.toString())
+                        .setValue(1)
+                        .setCustomDimension(1, obaRegionName)
+                        .build());
+
+                tracker2.send(new HitBuilders.EventBuilder()
+                        .setCategory(ObaEventCategory.STOP_ACTION.toString())
+                        .setAction("Stop Id: " + stopId)
+                        .setLabel(stopDistance.toString())
+                        .setValue(1)
+                        .setCustomDimension(1, obaRegionName)
+                        .build());
+
             }
+
+        } catch (Exception e) {
+            //If location comes null
+            e.printStackTrace();
         }
     }
 
@@ -173,21 +191,15 @@ public class ObaAnalytics {
      * @param activity
      */
     public static void reportActivityStart(Activity activity) {
-        if (isAnalyticsActive()) {
-            GoogleAnalytics.getInstance(activity).reportActivityStart(activity);
-        }
+        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+        tracker.setScreenName(activity.getClass().getSimpleName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        Tracker tracker2 = Application.get().getTracker(Application.TrackerName.GLOBAL_TRACKER);
+        tracker2.setScreenName(activity.getClass().getSimpleName());
+        tracker2.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    /**
-     * For reporting activities on Stop
-     *
-     * @param activity
-     */
-    public static void reportActivityStop(Activity activity) {
-        if (isAnalyticsActive()) {
-            GoogleAnalytics.getInstance(activity).reportActivityStop(activity);
-        }
-    }
 
     /**
      * For reporting fragments on Start
@@ -195,10 +207,24 @@ public class ObaAnalytics {
      * @param fragment
      */
     public static void reportFragmentStart(Fragment fragment) {
-        if (isAnalyticsActive()) {
-            Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
-            tracker.setScreenName(fragment.getClass().getSimpleName());
-            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        Tracker tracker = Application.get().getTracker(Application.TrackerName.APP_TRACKER);
+        tracker.setScreenName(fragment.getClass().getSimpleName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        Tracker tracker2 = Application.get().getTracker(Application.TrackerName.GLOBAL_TRACKER);
+        tracker2.setScreenName(fragment.getClass().getSimpleName());
+        tracker2.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    public static void initAnalytics(Context context) {
+        if (isAnalyticsActive() == false) {
+            //Disable Google Analytics
+            GoogleAnalytics.getInstance(context).setAppOptOut(true);
+        }
+
+        if (BuildConfig.DEBUG) {
+            //Disables reporting when app runs on debug
+            GoogleAnalytics.getInstance(context).setDryRun(true);
         }
     }
 

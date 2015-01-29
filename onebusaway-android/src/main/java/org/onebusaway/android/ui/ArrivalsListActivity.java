@@ -177,12 +177,6 @@ public class ArrivalsListActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStop() {
-        ObaAnalytics.reportActivityStop(this);
-        super.onStop();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             NavHelp.goUp(this);

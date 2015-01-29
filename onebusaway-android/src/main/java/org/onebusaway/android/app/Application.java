@@ -72,6 +72,7 @@ public class Application extends android.app.Application {
         initOba();
         initObaRegion();
 
+        ObaAnalytics.initAnalytics(this);
         reportAnalytics();
     }
 

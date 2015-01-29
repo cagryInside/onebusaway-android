@@ -33,6 +33,8 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+
 public class PreferencesActivity extends PreferenceActivity
         implements Preference.OnPreferenceClickListener, OnPreferenceChangeListener,
         SharedPreferences.OnSharedPreferenceChangeListener, ObaRegionsTask.Callback {
@@ -42,6 +44,8 @@ public class PreferencesActivity extends PreferenceActivity
     Preference regionPref;
 
     Preference customApiUrlPref;
+
+    Preference analyticsPref;
 
     boolean autoSelectInitialValue;
     //Save initial value so we can compare to current value in onDestroy()
@@ -61,6 +65,9 @@ public class PreferencesActivity extends PreferenceActivity
 
         customApiUrlPref = findPreference(getString(R.string.preference_key_oba_api_url));
         customApiUrlPref.setOnPreferenceChangeListener(this);
+
+        analyticsPref = findPreference(getString(R.string.preferences_key_analytics));
+        analyticsPref.setOnPreferenceChangeListener(this);
 
         SharedPreferences settings = Application.getPrefs();
         autoSelectInitialValue = settings
@@ -88,7 +95,6 @@ public class PreferencesActivity extends PreferenceActivity
     @Override
     protected void onStop() {
         super.onStop();
-        ObaAnalytics.reportActivityStop(this);
     }
 
     /**
@@ -140,6 +146,9 @@ public class PreferencesActivity extends PreferenceActivity
                 }
                 NavHelp.goHome(this);
             }
+        } else if (preference.equals(analyticsPref) && newValue instanceof Boolean) {
+            Boolean isAnalyticsActive = (Boolean) newValue;
+            GoogleAnalytics.getInstance(this).setAppOptOut(!isAnalyticsActive);
         }
         return true;
     }
@@ -196,7 +205,7 @@ public class PreferencesActivity extends PreferenceActivity
         } else if (key.equalsIgnoreCase(getString(R.string.preference_key_preferred_units))) {
             // Change the preferred units description
             changePreferenceSummary(key);
-        } else if (key.equalsIgnoreCase(getString(R.string.preference_key_auto_select_region))){
+        } else if (key.equalsIgnoreCase(getString(R.string.preference_key_auto_select_region))) {
             //Analytics
             boolean autoSelect = settings
                     .getBoolean(getString(R.string.preference_key_auto_select_region), false);

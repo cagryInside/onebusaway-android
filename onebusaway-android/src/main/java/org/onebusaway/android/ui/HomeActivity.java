@@ -294,7 +294,6 @@ public class HomeActivity extends ActionBarActivity
         if (mLocationClient != null && mLocationClient.isConnected()) {
             mLocationClient.disconnect();
         }
-        ObaAnalytics.reportActivityStop(this);
         super.onStop();
     }
 

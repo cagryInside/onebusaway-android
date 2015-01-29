@@ -67,7 +67,6 @@ public class RouteInfoActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        ObaAnalytics.reportActivityStop(this);
     }
 
     @Override
