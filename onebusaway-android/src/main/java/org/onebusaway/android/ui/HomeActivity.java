@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Paul Watts (paulcwatts@gmail.com),
+ * Copyright (C) 2012-2015 Paul Watts (paulcwatts@gmail.com),
  * University of South Florida (sjbarbeau@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -266,7 +266,6 @@ public class HomeActivity extends ActionBarActivity
             mLocationClient.connect();
         }
         ObaAnalytics.reportActivityStart(this);
-
         if (Build.VERSION.SDK_INT >= 14) {
             AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
             Boolean isTalkBackEnabled = am.isTouchExplorationEnabled();
@@ -619,7 +618,8 @@ public class HomeActivity extends ActionBarActivity
                 try {
                     digest = MessageDigest.getInstance("SHA-1");
                     digest.update(Application.get().getCustomApiUrl().getBytes());
-                    customUrl = Application.getHex(digest.digest());
+                    customUrl = Application.get().getString(R.string.analytics_label_custom_url) +
+                            ": " + Application.getHex(digest.digest());
                 } catch (Exception e) {
                     customUrl = Application.get().getString(R.string.analytics_label_custom_url);
                 }
@@ -627,7 +627,6 @@ public class HomeActivity extends ActionBarActivity
                         getString(R.string.analytics_action_button_press),
                         getString(R.string.analytics_label_button_press_stopinfo) + customUrl);
             }
-
         } else {
             // A particular stop lost focus (e.g., user tapped on the map), so hide the panel
             // and clear the currently focused stopId

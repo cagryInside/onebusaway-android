@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Brian Ferris (bdferris@onebusaway.org)
+ * Copyright (C) 2010-2015 Brian Ferris (bdferris@onebusaway.org), University of South Florida
  * and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

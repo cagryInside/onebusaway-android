@@ -255,6 +255,7 @@ public class StopOverlay implements GoogleMap.OnMarkerClickListener, GoogleMap.O
         // Report Stop distance metric
         Location stopLocation = stop.getLocation();
         Location myLocation = LocationUtil.getLocation2(mActivity, null);
+        // Track the users distance to bus stop
         ObaAnalytics.trackBusStopDistance(stop.getId(), myLocation, stopLocation);
         return true;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Paul Watts (paulcwatts@gmail.com)
+ * Copyright (C) 2012-2015 Paul Watts (paulcwatts@gmail.com), University of South Florida
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ public class Application extends android.app.Application {
 
     private static Application mApp;
 
-    private static final String PROPERTY_ID = "UA-57764191-1";
 
     /**
      * Google analytics tracker configs
@@ -233,7 +232,6 @@ public class Application extends android.app.Application {
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
         if (!mTrackers.containsKey(trackerId)) {
-
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
             Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(R.xml.app_tracker)
                     : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
@@ -254,7 +252,8 @@ public class Application extends android.app.Application {
             try {
                 digest = MessageDigest.getInstance("SHA-1");
                 digest.update(getCustomApiUrl().getBytes());
-                customUrl = Application.getHex(digest.digest());
+                customUrl = getString(R.string.analytics_label_custom_url) +
+                        ": " + getHex(digest.digest());
             } catch (Exception e) {
                 customUrl = Application.get().getString(R.string.analytics_label_custom_url);
             }
@@ -274,13 +273,11 @@ public class Application extends android.app.Application {
                 Boolean.FALSE);
         Boolean autoRegion = getPrefs().getBoolean(getString(R.string.preference_key_auto_select_region),
                 Boolean.FALSE);
-
         ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                 getString(R.string.analytics_action_edit_general), getString(R.string.analytics_label_experimental)
                         + (experimentalRegions ? "YES" : "NO"));
         ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                 getString(R.string.analytics_action_edit_general), getString(R.string.analytics_label_region_auto)
                         + (autoRegion ? "YES" : "NO"));
-
     }
 }

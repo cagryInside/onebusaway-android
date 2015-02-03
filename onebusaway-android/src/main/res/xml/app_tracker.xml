@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Replace placeholder ID with your tracking ID -->
     <string name="ga_trackingId">UA-2423527-19</string>
 
     <bool name="ga_autoActivityTracking">true</bool>
     <bool name="ga_reportUncaughtExceptions">true</bool>
-
-    <bool name="ga_debug">true</bool>
 
     <item
         name="ga_dispatchPeriod"
@@ -16,14 +12,11 @@
     </item>
 
     <string name="ga_sampleFrequency">90</string>
-
     <bool name="ga_anonymizeIp">true</bool>
     <bool name="ga_dryRun">false</bool>
-
     <string name="ga_sampleFrequency">100.0</string>
     <integer name="ga_sessionTimeout">500</integer>
 
-    <!-- The screen names that will appear in reports -->
     <screenName name="org.onebusaway.android.ui.SearchActivity">
         SearchActivity
     </screenName>

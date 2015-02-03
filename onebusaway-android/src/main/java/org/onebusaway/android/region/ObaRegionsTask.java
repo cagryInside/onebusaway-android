@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Paul Watts (paulcwatts@gmail.com) 
+ * Copyright (C) 2012-2015 Paul Watts (paulcwatts@gmail.com), University of South Florida
  * and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -183,7 +183,6 @@ public class ObaRegionsTask extends AsyncTask<Void, Integer, ArrayList<ObaRegion
                     Log.d(TAG, "Detected closer region '" + closestRegion.getName()
                             + "', changed to this region.");
                 }
-
                 //Analytics
                 ObaAnalytics.reportEventWithCategory(ObaAnalytics.ObaEventCategory.APP_SETTINGS.toString(),
                         mContext.getString(R.string.analytics_action_configured_region_auto)
