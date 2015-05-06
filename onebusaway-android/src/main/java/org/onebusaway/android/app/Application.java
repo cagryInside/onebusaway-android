@@ -39,6 +39,9 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.UUID;
 
+import edu.usf.cutr.trackerlib.tracker.DeviceTrackerManager;
+import edu.usf.cutr.trackerlib.data.TrackerConfig;
+
 public class Application extends android.app.Application {
 
     public static final String APP_UID = "app_uid";
@@ -73,6 +76,8 @@ public class Application extends android.app.Application {
 
         ObaAnalytics.initAnalytics(this);
         reportAnalytics();
+
+        initDeviceTracker();
     }
 
     /**
@@ -84,6 +89,9 @@ public class Application extends android.app.Application {
     public void onTerminate() {
         super.onTerminate();
         mApp = null;
+
+        //Stop Device tracking
+        DeviceTrackerManager.stopTracker();
     }
 
     //
@@ -231,8 +239,27 @@ public class Application extends android.app.Application {
             return;
         }
 
-
         ObaApi.getDefaultContext().setRegion(region);
+    }
+
+    /**
+     * Initialize device tracker library
+     */
+    public void initDeviceTracker() {
+        boolean isDeviceTrackingActive = getPrefs().getBoolean(getString(
+                R.string.preference_key_device_tracking),false);
+
+        if (isDeviceTrackingActive){
+            boolean useWifiOnly =  getPrefs().getBoolean(getString(
+                    R.string.preference_key_device_tracking_wifi),false);
+            TrackerConfig tc = new TrackerConfig("demo.traccar.org", 5005, TrackerConfig.TrackerType.BATCH,
+                    useWifiOnly);
+
+            String uuid = mPrefs.getString(APP_UID, null);
+
+            DeviceTrackerManager.init(tc, getApplicationContext(), uuid);
+            DeviceTrackerManager.startTracker();
+        }
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
