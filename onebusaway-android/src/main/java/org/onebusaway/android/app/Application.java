@@ -15,6 +15,15 @@
  */
 package org.onebusaway.android.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -26,21 +35,12 @@ import org.onebusaway.android.io.elements.ObaRegion;
 import org.onebusaway.android.provider.ObaContract;
 import org.onebusaway.android.util.PreferenceHelp;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.UUID;
 
-import edu.usf.cutr.trackerlib.tracker.DeviceTrackerManager;
 import edu.usf.cutr.trackerlib.data.TrackerConfig;
+import edu.usf.cutr.trackerlib.tracker.DeviceTrackerManager;
 
 public class Application extends android.app.Application {
 
@@ -247,18 +247,21 @@ public class Application extends android.app.Application {
      */
     public void initDeviceTracker() {
         boolean isDeviceTrackingActive = getPrefs().getBoolean(getString(
-                R.string.preference_key_device_tracking),false);
+                R.string.preference_key_device_tracking), Boolean.TRUE);
 
         if (isDeviceTrackingActive){
             boolean useWifiOnly =  getPrefs().getBoolean(getString(
-                    R.string.preference_key_device_tracking_wifi),false);
-            TrackerConfig tc = new TrackerConfig("demo.traccar.org", 5005, TrackerConfig.TrackerType.BATCH,
+                    R.string.preference_key_device_tracking_wifi),
+                    Boolean.FALSE);
+            TrackerConfig tc = new TrackerConfig("transittools.forest.usf.edu", 5005, TrackerConfig.TrackerType.BATCH,
                     useWifiOnly);
 
             String uuid = mPrefs.getString(APP_UID, null);
 
             DeviceTrackerManager.init(tc, getApplicationContext(), uuid);
             DeviceTrackerManager.startTracker();
+
+            DeviceTrackerManager.initAnalytics(getApplicationContext(), "UA-57764191-3");
         }
     }
 
