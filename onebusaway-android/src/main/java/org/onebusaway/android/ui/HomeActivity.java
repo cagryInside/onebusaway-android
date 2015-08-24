@@ -1069,6 +1069,20 @@ public class HomeActivity extends ActionBarActivity
         }
     }
 
+    private void setupOpen311() {
+        ObaRegion mCurrentRegion = Application.get().getCurrentRegion();
+
+        if (mCurrentRegion != null) {
+            //Init Open311
+            /**
+             * Test urls and API keys
+             */
+//            Open311Manager.initOpen311WithOption(new Open311Option("http://www.publicstuff.com/api/open311/", "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
+            Open311Manager.initOpen311WithOption(new Open311Option(mCurrentRegion.getOpen311Url(), "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
+            Open311Manager.initOpen311WithOption(new Open311Option("http://10.226.3.219:5000/", "12345", "miamidade.gov"));
+        }
+    }
+
     /**
      * Our definition of collapsed is consistent with SlidingPanel pre-v3.0.0 definition - we don't
      * consider the panel changing from the hidden state to the collapsed state to be a "collapsed"

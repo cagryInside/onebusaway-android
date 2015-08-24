@@ -36,6 +36,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
 import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.location.LocationManager;
@@ -72,6 +73,7 @@ public class Application extends android.app.Application {
      */
     private static Location mLastKnownLocation = null;
 
+    public Bitmap btm;
     // Magnetic declination is based on location, so track this centrally too.
     static GeomagneticField mGeomagneticField = null;
 
