@@ -46,8 +46,13 @@ public class Open311Parser {
      * @return ServiceListResponse object
      */
     public static ServiceListResponse parseServices(String json) {
+
+        if (json == null) {
+            return new ServiceListResponse();
+        }
+
         ObjectMapper om = new ObjectMapper();
-        ArrayList<Service> services = null;
+        ArrayList<Service> services;
         ServiceListResponse slr = new ServiceListResponse();
         try {
             services = om.readValue(json, new TypeReference<ArrayList<Service>>() {
@@ -67,6 +72,11 @@ public class Open311Parser {
      * @return ServiceDescription object
      */
     public static ServiceDescription parseServiceDescription(String json) {
+
+        if (json == null) {
+            return new ServiceDescription();
+        }
+
         ObjectMapper om = new ObjectMapper();
         ServiceDescription serviceDescription = new ServiceDescription();
         try {
@@ -87,6 +97,10 @@ public class Open311Parser {
      */
     public static ServiceRequestResponse parseRequestResponse(String json, Open311Type open311Type) {
         ServiceRequestResponse response = null;
+
+        if (json == null) {
+            return new ServiceRequestResponse(open311Type);
+        }
 
         try {
             JSONArray jsonArray = new JSONArray(json);

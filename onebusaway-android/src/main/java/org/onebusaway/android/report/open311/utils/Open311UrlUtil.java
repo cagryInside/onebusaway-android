@@ -16,18 +16,10 @@
 package org.onebusaway.android.report.open311.utils;
 
 
-import android.content.Context;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.onebusaway.android.report.open311.constants.Open311DataType;
 import org.onebusaway.android.report.open311.models.Open311AttributePair;
 import org.onebusaway.android.report.open311.models.ServiceListRequest;
@@ -91,9 +83,8 @@ public class Open311UrlUtil {
      * @return Apendable string for http get url
      * @throws java.io.IOException
      */
-    public static String nameValuePairsToParams(HttpEntity httpEntity) throws IOException {
+    public static String nameValuePairsToParams(List<NameValuePair> valuePairs) throws IOException {
 
-        List<NameValuePair> valuePairs = URLEncodedUtils.parse(httpEntity);
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < valuePairs.size(); i++) {
@@ -114,8 +105,24 @@ public class Open311UrlUtil {
      * @return UrlEncodedFormEntity object
      * @throws java.io.UnsupportedEncodingException
      */
-    public static UrlEncodedFormEntity prepareUrlEncodedEntity(ServiceRequest serviceRequest) throws UnsupportedEncodingException {
+    public static List<NameValuePair> prepareNameValuePairs(ServiceRequest serviceRequest) throws UnsupportedEncodingException {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+        if (serviceRequest.getAttributes() != null) {
+            for (Open311AttributePair open311AttributePair : serviceRequest.getAttributes()) {
+                if ("".equals(open311AttributePair.getValue()) == false) {
+
+                    if (Open311DataType.MULTIVALUELIST.equals(open311AttributePair.getOpen311DataType())) {
+                        nameValuePairs.add(new BasicNameValuePair("attribute[" + open311AttributePair.getCode() + "][]"
+                                , open311AttributePair.getValue()));
+                    } else {
+                        nameValuePairs.add(new BasicNameValuePair("attribute[" + open311AttributePair.getCode() + "]"
+                                , open311AttributePair.getValue()));
+                    }
+                }
+            }
+        }
+
         nameValuePairs.add(new BasicNameValuePair("api_key", serviceRequest.getApi_key()));
         nameValuePairs.add(new BasicNameValuePair("service_code", serviceRequest.getService_code()));
         nameValuePairs.add(new BasicNameValuePair("service_name", serviceRequest.getService_name()));
@@ -147,81 +154,8 @@ public class Open311UrlUtil {
         if (serviceRequest.getDevice_id() != null)
             nameValuePairs.add(new BasicNameValuePair("device_id", serviceRequest.getDevice_id()));
 
-        if (serviceRequest.getAttributes() != null) {
-            for (Open311AttributePair open311AttributePair : serviceRequest.getAttributes()) {
-                if ("".equals(open311AttributePair.getValue()) == false) {
-
-                    if (Open311DataType.MULTIVALUELIST.equals(open311AttributePair.getOpen311DataType())) {
-                        nameValuePairs.add(new BasicNameValuePair("attribute[" + open311AttributePair.getCode() + "][]"
-                                , open311AttributePair.getValue()));
-                    } else {
-                        nameValuePairs.add(new BasicNameValuePair("attribute[" + open311AttributePair.getCode() + "]"
-                                , open311AttributePair.getValue()));
-                    }
-                }
-            }
-        }
-
-        return new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8);
+        return nameValuePairs;
     }
-
-    /**
-     * Creates multi part entity for service request
-     * This method useful for sending images, and media files
-     *
-     * @param serviceRequest
-     * @param context
-     * @return
-     * @throws java.io.UnsupportedEncodingException
-     */
-    public static MultipartEntity prepareMultipartEntity(ServiceRequest serviceRequest,
-                                                         Context context) throws UnsupportedEncodingException {
-        MultipartEntity multipartEntity = new MultipartEntity();
-        multipartEntity.addPart("api_key", new StringBody(serviceRequest.getApi_key()));
-        multipartEntity.addPart("service_code", new StringBody(serviceRequest.getService_code()));
-        multipartEntity.addPart("service_name", new StringBody(serviceRequest.getService_name()));
-
-        if (serviceRequest.getLat() != null && serviceRequest.getLang() != null) {
-            multipartEntity.addPart("lat", new StringBody(serviceRequest.getLat().toString()));
-            multipartEntity.addPart("long", new StringBody(serviceRequest.getLang().toString()));
-        } else {
-            multipartEntity.addPart("jurisdiction_id", new StringBody(serviceRequest.getJurisdiction_id()));
-        }
-
-        if (serviceRequest.getAddress_string() != null) {
-            multipartEntity.addPart("address_string", new StringBody(serviceRequest.getAddress_string()));
-        }
-
-        multipartEntity.addPart("description", new StringBody(serviceRequest.getDescription()));
-//        if (serviceRequest.getMedia_url() != null)
-//            multipartEntity.addPart("media_url", new StringBody(serviceRequest.getMedia_url()));
-
-        if (serviceRequest.getFirst_name() != null) {
-            //Personal info
-            multipartEntity.addPart("first_name", new StringBody(serviceRequest.getFirst_name()));
-            multipartEntity.addPart("last_name", new StringBody(serviceRequest.getLast_name()));
-        }
-        if (serviceRequest.getPhone() != null && "".equals(serviceRequest.getPhone()) == false)
-            multipartEntity.addPart("phone", new StringBody(serviceRequest.getPhone()));
-
-        multipartEntity.addPart("email", new StringBody(serviceRequest.getEmail()));
-
-        if (serviceRequest.getDevice_id() != null)
-            multipartEntity.addPart("device_id", new StringBody(serviceRequest.getDevice_id()));
-
-        multipartEntity.addPart("media", new ByteArrayBody(serviceRequest.getMedia(), "image.jpg"));
-
-        if (serviceRequest.getAttributes() != null) {
-            for (Open311AttributePair open311AttributePair : serviceRequest.getAttributes()) {
-                if ("".equals(open311AttributePair.getValue()) == false) {
-                    multipartEntity.addPart("attribute[" + open311AttributePair.getCode() + "]", new StringBody(open311AttributePair.getValue()));
-                }
-            }
-        }
-
-        return multipartEntity;
-    }
-
 
     /**
      * Creates http entity for ServiceListRequest
@@ -230,7 +164,7 @@ public class Open311UrlUtil {
      * @return
      * @throws java.io.UnsupportedEncodingException
      */
-    public static UrlEncodedFormEntity prepareUrlEncodedEntity(ServiceListRequest serviceListRequest) throws UnsupportedEncodingException {
+    public static List<NameValuePair> prepareNameValuePairs(ServiceListRequest serviceListRequest) throws UnsupportedEncodingException {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         if (serviceListRequest.getLat() != null && serviceListRequest.getLang() != null) {
             nameValuePairs.add(new BasicNameValuePair("lat", serviceListRequest.getLat().toString()));
@@ -239,7 +173,7 @@ public class Open311UrlUtil {
             nameValuePairs.add(new BasicNameValuePair("jurisdiction_id", serviceListRequest.getJurisdictionId()));
         }
 
-        return new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8);
+        return nameValuePairs;
     }
 
 }

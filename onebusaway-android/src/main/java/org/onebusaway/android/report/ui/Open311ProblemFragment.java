@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -76,8 +77,10 @@ import org.onebusaway.android.report.open311.utils.Open311Validator;
 import org.onebusaway.android.report.ui.dialog.ReportSuccessDialog;
 import org.onebusaway.android.report.ui.util.IssueLocationHelper;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -374,14 +377,19 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
      * @return image in bytes
      * @throws IOException
      */
-    private byte[] createImageFile() throws IOException {
-        //Convert bitmap to byte array
+    private File createImageFile() throws IOException {
+        //Convert bitmap to file
         Bitmap bitmap = ((BitmapDrawable) issueImage.getDrawable()).getBitmap();
-        Application.get().btm = bitmap;
-        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        String path = Environment.getExternalStorageDirectory().toString() + "/" + "Download";
+        File file = new File(path, "image.jpg");
+        OutputStream fOut = null;
+        fOut = new FileOutputStream(file);
 
-        return stream.toByteArray();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+        fOut.flush();
+        fOut.close();
+
+        return file;
     }
 
     private void openCamera() {
