@@ -17,7 +17,7 @@
             android:id="@+id/rtl_icon"
             android:layout_width="50dip"
             android:layout_height="50dip"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/ic_action_alert_error" />
 
     </LinearLayout>
 

@@ -15,6 +15,18 @@
  */
 package org.onebusaway.android.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.hardware.GeomagneticField;
+import android.location.Location;
+import android.location.LocationManager;
+import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -30,19 +42,6 @@ import org.onebusaway.android.provider.ObaContract;
 import org.onebusaway.android.util.BuildFlavorUtil;
 import org.onebusaway.android.util.LocationUtil;
 import org.onebusaway.android.util.PreferenceHelp;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.hardware.GeomagneticField;
-import android.location.Location;
-import android.location.LocationManager;
-import android.preference.PreferenceManager;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -76,7 +75,6 @@ public class Application extends android.app.Application {
     // Magnetic declination is based on location, so track this centrally too.
     static GeomagneticField mGeomagneticField = null;
 
-    public Bitmap btm;
     /**
      * Google analytics tracker configs
      */

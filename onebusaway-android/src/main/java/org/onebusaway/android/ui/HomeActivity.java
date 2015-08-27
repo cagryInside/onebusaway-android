@@ -16,33 +16,6 @@
  */
 package org.onebusaway.android.ui;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.onebusaway.android.BuildConfig;
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.ObaAnalytics;
-import org.onebusaway.android.io.elements.ObaRegion;
-import org.onebusaway.android.io.elements.ObaRoute;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
-import org.onebusaway.android.map.MapModeController;
-import org.onebusaway.android.map.MapParams;
-import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
-import org.onebusaway.android.region.ObaRegionsTask;
-import org.onebusaway.android.report.open311.Open311Manager;
-import org.onebusaway.android.report.open311.models.Open311Option;
-import org.onebusaway.android.report.ui.ReportActivity;
-import org.onebusaway.android.tripservice.TripService;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.LocationUtil;
-import org.onebusaway.android.util.PreferenceHelp;
-import org.onebusaway.android.util.UIHelp;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -75,7 +48,33 @@ import android.view.animation.Transformation;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.security.MessageDigest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import org.onebusaway.android.BuildConfig;
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.io.elements.ObaRegion;
+import org.onebusaway.android.io.elements.ObaRoute;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
+import org.onebusaway.android.map.MapModeController;
+import org.onebusaway.android.map.MapParams;
+import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
+import org.onebusaway.android.region.ObaRegionsTask;
+import org.onebusaway.android.report.open311.Open311Manager;
+import org.onebusaway.android.report.open311.models.Open311Option;
+import org.onebusaway.android.report.ui.ReportActivity;
+import org.onebusaway.android.tripservice.TripService;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.LocationUtil;
+import org.onebusaway.android.util.PreferenceHelp;
+import org.onebusaway.android.util.RegionUtils;
+import org.onebusaway.android.util.UIHelp;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -808,7 +807,7 @@ public class HomeActivity extends ActionBarActivity
         if (mFocusedStop != null){
             ReportActivity.start(this, mFocusedStopId, mFocusedStop.getLatitude(), mFocusedStop.getLongitude());
         } else {
-            Location loc = LocationUtil.getLocation(this, mGoogleApiClient);
+            Location loc = LocationUtil.getDefaultSearchCenter();
             ReportActivity.start(this, null, loc.getLatitude(), loc.getLongitude());
         }
     }

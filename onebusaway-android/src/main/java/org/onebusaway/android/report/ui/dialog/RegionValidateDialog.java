@@ -41,7 +41,7 @@ public class RegionValidateDialog extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 // Set Dialog Icon
-                .setIcon(R.drawable.ic_launcher)
+                .setIcon(R.drawable.ic_action_alert_error)
                 .setTitle(R.string.region_dialog_title)
                 .setMessage(message.toString())
 

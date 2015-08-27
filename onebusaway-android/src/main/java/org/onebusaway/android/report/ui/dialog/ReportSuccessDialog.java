@@ -38,7 +38,7 @@ public class ReportSuccessDialog extends DialogFragment {
 
 
         return new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_launcher)
+                .setIcon(R.drawable.ic_action_alert_error)
                 .setTitle(R.string.region_dialog_title)
                 .setMessage(Open311Constants.M_REPORT_SUCCESS)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
