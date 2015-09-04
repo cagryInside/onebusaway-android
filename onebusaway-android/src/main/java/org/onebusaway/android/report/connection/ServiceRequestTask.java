@@ -15,11 +15,12 @@
 */
 package org.onebusaway.android.report.connection;
 
+
 import android.os.AsyncTask;
 
-import org.onebusaway.android.report.open311.Open311;
-import org.onebusaway.android.report.open311.models.ServiceRequest;
-import org.onebusaway.android.report.open311.models.ServiceRequestResponse;
+import edu.usf.cutr.open311client.Open311;
+import edu.usf.cutr.open311client.models.ServiceRequest;
+import edu.usf.cutr.open311client.models.ServiceRequestResponse;
 
 /**
  * Async task used to submit Open311 issue requests

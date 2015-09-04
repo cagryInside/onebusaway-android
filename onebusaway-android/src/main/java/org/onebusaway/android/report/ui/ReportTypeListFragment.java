@@ -15,6 +15,12 @@
 */
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.elements.ObaRegion;
+import org.onebusaway.android.report.ui.adapter.ReportTypeListAdapter;
+import org.onebusaway.android.report.ui.model.ReportTypeItem;
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -31,15 +37,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.elements.ObaRegion;
-import org.onebusaway.android.report.open311.Open311Manager;
-import org.onebusaway.android.report.ui.adapter.ReportTypeListAdapter;
-import org.onebusaway.android.report.ui.model.ReportTypeItem;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.usf.cutr.open311client.Open311Manager;
 
 /**
  * @author Cagri Cetin
@@ -74,7 +75,7 @@ public class ReportTypeListFragment extends ListFragment implements AdapterView.
         }
 
         Boolean isEmailDefined = isEmailDefined();
-        List<ReportTypeItem> reportTypeItems = new ArrayList<ReportTypeItem>();
+        List<ReportTypeItem> reportTypeItems = new ArrayList<>();
         for (int i = 0; i < reportTypes.length; i++) {
             //Don't show the send app feedback section if email is not defined for region
             if (!isEmailDefined && getString(R.string.rt_app_feedback).equals(reportTypes[i]))
@@ -160,8 +161,7 @@ public class ReportTypeListFragment extends ListFragment implements AdapterView.
         Boolean isOpen311Active = Boolean.FALSE;
 
         if (currentRegion != null) {
-            String jurisdictionId = currentRegion.getOpen311JurisdictionId();
-            isOpen311Active = Open311Manager.isOpen311Active(jurisdictionId);
+            isOpen311Active = Open311Manager.isOpen311Exist();
         }
         return isOpen311Active;
     }

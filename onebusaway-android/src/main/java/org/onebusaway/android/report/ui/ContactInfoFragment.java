@@ -15,6 +15,10 @@
 */
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.report.constants.ReportConstants;
+import org.onebusaway.android.util.PreferenceHelp;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -22,10 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.report.constants.ReportConstants;
-import org.onebusaway.android.report.open311.models.Open311User;
-import org.onebusaway.android.util.PreferenceHelp;
+import edu.usf.cutr.open311client.models.Open311User;
 
 /**
  * Show contact information for Open311 endpoint

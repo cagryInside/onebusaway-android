@@ -15,23 +15,20 @@
 */
 package org.onebusaway.android.report.ui.adapter;
 
+import org.onebusaway.android.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.onebusaway.android.R;
 
 /**
  * @author Cagri Cetin
@@ -56,7 +53,7 @@ public class ImageAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((LinearLayout) object);
+        return view == object;
     }
 
     @Override
@@ -74,11 +71,9 @@ public class ImageAdapter extends PagerAdapter {
         Spanned html = convertStringToHtml(texts[position]);
         ((TextView) itemView.findViewById(R.id.rsp_textView)).setText(html);
 
-        Drawable drawable = context.getResources().getDrawable(images[position]);
         Bitmap btm = BitmapFactory.decodeResource(context.getResources(), images[position]);
-//        btm = scaleImageToFit(btm);
         imageView.setImageBitmap(btm);
-        ((ViewPager) container).addView(itemView);
+        container.addView(itemView);
 
         return itemView;
     }
@@ -89,13 +84,6 @@ public class ImageAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((RelativeLayout) object);
+        container.removeView((RelativeLayout) object);
     }
-
-    private Bitmap scaleImageToFit(Bitmap image) {
-        int nh = (int) (image.getHeight() * (512.0 / image.getWidth()));
-        Bitmap scaled = Bitmap.createScaledBitmap(image, 512, nh, true);
-        return scaled;
-    }
-
 }

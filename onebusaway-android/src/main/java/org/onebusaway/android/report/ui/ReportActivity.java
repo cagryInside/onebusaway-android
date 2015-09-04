@@ -16,11 +16,6 @@
 
 package org.onebusaway.android.report.ui;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Window;
-
 import org.onebusaway.android.R;
 import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
@@ -28,6 +23,11 @@ import org.onebusaway.android.map.MapParams;
 import org.onebusaway.android.report.constants.ReportConstants;
 import org.onebusaway.android.report.ui.dialog.RegionValidateDialog;
 import org.onebusaway.android.ui.PreferencesActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Window;
 
 /**
  * Fragment Activity for handling all report
@@ -66,7 +66,7 @@ public class ReportActivity extends BaseReportActivity {
      * @param lat     The latitude of the map center.
      * @param lon     The longitude of the map center.
      */
-    public static final void start(Context context,
+    public static void start(Context context,
                                    String focusId,
                                    double lat,
                                    double lon) {
@@ -82,7 +82,7 @@ public class ReportActivity extends BaseReportActivity {
      * @param lat     The latitude of the map center.
      * @param lon     The longitude of the map center.
      */
-    public static final Intent makeIntent(Context context,
+    public static Intent makeIntent(Context context,
                                           String focusId,
                                           double lat,
                                           double lon) {

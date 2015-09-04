@@ -15,13 +15,15 @@
 */
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.report.constants.ReportConstants;
+import org.onebusaway.android.util.PreferenceHelp;
+
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 
-import org.onebusaway.android.report.constants.ReportConstants;
-import org.onebusaway.android.report.open311.models.Open311User;
-import org.onebusaway.android.util.PreferenceHelp;
+import edu.usf.cutr.open311client.models.Open311User;
+
 /**
  * @author Cagri Cetin
  */

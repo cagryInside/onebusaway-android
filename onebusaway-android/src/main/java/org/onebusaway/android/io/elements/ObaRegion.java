@@ -112,6 +112,11 @@ public interface ObaRegion {
     public String getOpen311Url();
 
     /**
+     * @return The Open311 Api key for the region
+     */
+    public String getOpen311ApiKey();
+
+    /**
      * @return The Open311 jurisdiction id for the region
      */
     public String getOpen311JurisdictionId();

@@ -15,14 +15,16 @@
 */
 package org.onebusaway.android.report.ui.dialog;
 
+import org.onebusaway.android.R;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.report.open311.constants.Open311Constants;
+import edu.usf.cutr.open311client.constants.Open311Constants;
 
 /**
  * Show if the report submission is successful
@@ -34,6 +36,7 @@ public class ReportSuccessDialog extends DialogFragment {
     public static final String TAG = "ReportSuccessDialog";
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 

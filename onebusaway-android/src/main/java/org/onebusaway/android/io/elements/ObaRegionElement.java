@@ -219,13 +219,17 @@ public class ObaRegionElement implements ObaRegion {
 
     @Override
     public String getOpen311Url() {
-        return "http://test.seeclickfix.com/open311/v2/";
+        return "http://test.seeclickfix.com/open311/v2/;http://www.publicstuff.com/api/open311/";
+    }
+
+    @Override
+    public String getOpen311ApiKey() {
+        return "937033cad3054ec58a1a8156dcdd6ad8a416af2f;937033cad3054ec58a1a8156dcdd6ad8a416af2f";
     }
 
     @Override
     public String getOpen311JurisdictionId() {
-        return "Tampa";
-//        return "tampa-fl";
+        return ";tampa-fl";
     }
 
     @Override

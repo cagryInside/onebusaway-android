@@ -15,15 +15,16 @@
 */
 package org.onebusaway.android.report.ui.dialog;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.report.ui.ReportActivity;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.report.ui.ReportActivity;
 
 /**
  * Show to validate if the current user is in expected region
@@ -33,6 +34,7 @@ import org.onebusaway.android.report.ui.ReportActivity;
 public class RegionValidateDialog extends DialogFragment {
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         StringBuilder message = new StringBuilder();
@@ -75,6 +77,6 @@ public class RegionValidateDialog extends DialogFragment {
     }
 
     private void closeSuperActivity() {
-        ((ReportActivity) getActivity()).finish();
+        getActivity().finish();
     }
 }

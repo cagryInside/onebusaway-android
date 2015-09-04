@@ -16,6 +16,32 @@
  */
 package org.onebusaway.android.ui;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import org.onebusaway.android.BuildConfig;
+import org.onebusaway.android.R;
+import org.onebusaway.android.app.Application;
+import org.onebusaway.android.io.ObaAnalytics;
+import org.onebusaway.android.io.elements.ObaRegion;
+import org.onebusaway.android.io.elements.ObaRoute;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
+import org.onebusaway.android.map.MapModeController;
+import org.onebusaway.android.map.MapParams;
+import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
+import org.onebusaway.android.region.ObaRegionsTask;
+import org.onebusaway.android.report.ui.ReportActivity;
+import org.onebusaway.android.tripservice.TripService;
+import org.onebusaway.android.util.FragmentUtils;
+import org.onebusaway.android.util.LocationUtil;
+import org.onebusaway.android.util.PreferenceHelp;
+import org.onebusaway.android.util.RegionUtils;
+import org.onebusaway.android.util.UIHelp;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -47,33 +73,6 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.onebusaway.android.BuildConfig;
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.ObaAnalytics;
-import org.onebusaway.android.io.elements.ObaRegion;
-import org.onebusaway.android.io.elements.ObaRoute;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.io.request.ObaArrivalInfoResponse;
-import org.onebusaway.android.map.MapModeController;
-import org.onebusaway.android.map.MapParams;
-import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
-import org.onebusaway.android.region.ObaRegionsTask;
-import org.onebusaway.android.report.open311.Open311Manager;
-import org.onebusaway.android.report.open311.models.Open311Option;
-import org.onebusaway.android.report.ui.ReportActivity;
-import org.onebusaway.android.tripservice.TripService;
-import org.onebusaway.android.util.FragmentUtils;
-import org.onebusaway.android.util.LocationUtil;
-import org.onebusaway.android.util.PreferenceHelp;
-import org.onebusaway.android.util.RegionUtils;
-import org.onebusaway.android.util.UIHelp;
 
 import java.util.Collections;
 import java.util.Date;
@@ -278,8 +277,6 @@ public class HomeActivity extends ActionBarActivity
         autoShowWhatsNew();
 
         checkRegionStatus();
-
-        setupOpen311();
     }
 
     @Override
@@ -1079,20 +1076,6 @@ public class HomeActivity extends ActionBarActivity
                 // We don't have an ObaStop or ObaRoute mapping, so just pass in null for those
                 updateArrivalListFragment(stopId, null, null);
             }
-        }
-    }
-
-    private void setupOpen311() {
-        ObaRegion mCurrentRegion = Application.get().getCurrentRegion();
-
-        if (mCurrentRegion != null) {
-            //Init Open311
-            /**
-             * Test urls and API keys
-             */
-//            Open311Manager.initOpen311WithOption(new Open311Option("http://www.publicstuff.com/api/open311/", "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
-            Open311Manager.initOpen311WithOption(new Open311Option(mCurrentRegion.getOpen311Url(), "937033cad3054ec58a1a8156dcdd6ad8a416af2f", mCurrentRegion.getOpen311JurisdictionId()));
-            Open311Manager.initOpen311WithOption(new Open311Option("http://10.226.3.219:5000/", "12345", "miamidade.gov"));
         }
     }
 

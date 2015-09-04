@@ -16,6 +16,14 @@
 
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.report.connection.ServiceDescriptionTask;
+import org.onebusaway.android.report.connection.ServiceRequestTask;
+import org.onebusaway.android.report.constants.ReportConstants;
+import org.onebusaway.android.report.ui.dialog.ReportSuccessDialog;
+import org.onebusaway.android.report.ui.util.IssueLocationHelper;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,6 +33,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,26 +66,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.report.connection.ServiceDescriptionTask;
-import org.onebusaway.android.report.connection.ServiceRequestTask;
-import org.onebusaway.android.report.constants.ReportConstants;
-import org.onebusaway.android.report.open311.Open311;
-import org.onebusaway.android.report.open311.Open311Manager;
-import org.onebusaway.android.report.open311.constants.Open311DataType;
-import org.onebusaway.android.report.open311.models.Open311Attribute;
-import org.onebusaway.android.report.open311.models.Open311AttributePair;
-import org.onebusaway.android.report.open311.models.Open311User;
-import org.onebusaway.android.report.open311.models.Service;
-import org.onebusaway.android.report.open311.models.ServiceDescription;
-import org.onebusaway.android.report.open311.models.ServiceRequest;
-import org.onebusaway.android.report.open311.models.ServiceRequestResponse;
-import org.onebusaway.android.report.open311.utils.Open311Validator;
-import org.onebusaway.android.report.ui.dialog.ReportSuccessDialog;
-import org.onebusaway.android.report.ui.util.IssueLocationHelper;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -84,6 +73,18 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import edu.usf.cutr.open311client.Open311;
+import edu.usf.cutr.open311client.constants.Open311DataType;
+import edu.usf.cutr.open311client.models.Open311Attribute;
+import edu.usf.cutr.open311client.models.Open311AttributePair;
+import edu.usf.cutr.open311client.models.Open311User;
+import edu.usf.cutr.open311client.models.Service;
+import edu.usf.cutr.open311client.models.ServiceDescription;
+import edu.usf.cutr.open311client.models.ServiceDescriptionRequest;
+import edu.usf.cutr.open311client.models.ServiceRequest;
+import edu.usf.cutr.open311client.models.ServiceRequestResponse;
+import edu.usf.cutr.open311client.utils.Open311Validator;
 
 /**
  * Created by Cagri Cetin
@@ -102,6 +103,8 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
 
     private Button galleryButton;
 
+    private Open311 mOpen311;
+
     //Captured image url
     private Uri mCapturedImageURI;
 
@@ -110,10 +113,12 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
 
     public static final String TAG = "Open311ProblemFragment";
 
-    public static void show(ActionBarActivity activity, Integer containerViewId) {
+    public static void show(ActionBarActivity activity, Integer containerViewId,
+                            Open311 open311) {
         FragmentManager fm = activity.getSupportFragmentManager();
 
         Open311ProblemFragment fragment = new Open311ProblemFragment();
+        fragment.setOpen311(open311);
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(containerViewId, fragment, TAG);
@@ -157,8 +162,11 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
                 Service service = (Service) servicesSpinner.getSelectedItem();
                 if (service.getService_code() != null) {
                     showProgress(Boolean.TRUE);
-                    ServiceDescriptionTask sdt = new ServiceDescriptionTask(
-                            getIssueLocationHelper().getIssueLocation(), service,
+                    Location location = getIssueLocationHelper().getIssueLocation();
+                    ServiceDescriptionRequest sdr = new ServiceDescriptionRequest(location.getLatitude(),
+                            location.getLongitude(), mOpen311.getJurisdiction(), service.getService_code());
+
+                    ServiceDescriptionTask sdt = new ServiceDescriptionTask(sdr, mOpen311,
                             Open311ProblemFragment.this);
                     sdt.execute();
                 }
@@ -168,7 +176,7 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
             public void onNothingSelected(AdapterView<?> parentView) {
             }
         });
-        ArrayAdapter<Service> adapter = new ArrayAdapter<Service>(getActivity(),
+        ArrayAdapter<Service> adapter = new ArrayAdapter<>(getActivity(),
                 android.support.v7.appcompat.R.layout.support_simple_spinner_dropdown_item,
                 getServiceList());
         servicesSpinner.setAdapter(adapter);
@@ -250,9 +258,6 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
      */
     private void submitReport() {
         //Get current Open311 service
-        String jurisdictionId = Application.get().getCurrentRegion().getOpen311JurisdictionId();
-        Open311 open311 = Open311Manager.getOpen311ByJurisdiction(jurisdictionId);
-
         Service service = (Service) servicesSpinner.getSelectedItem();
 
         //Prepare issue description
@@ -266,8 +271,8 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
         IssueLocationHelper issueLocationHelper = getIssueLocationHelper();
 
         ServiceRequest.Builder builder = new ServiceRequest.Builder();
-        builder.setJurisdiction_id(open311.getJurisdiction()).setService_code(service.getService_code()).
-                setService_name(service.getService_name()).setApi_key(open311.getApiKey()).
+        builder.setJurisdiction_id(mOpen311.getJurisdiction()).setService_code(service.getService_code()).
+                setService_name(service.getService_name()).setApi_key(mOpen311.getApiKey()).
                 setLat(issueLocationHelper.getIssueLocation().getLatitude()).
                 setLang(issueLocationHelper.getIssueLocation().getLongitude()).setSummary(null).
                 setDescription(description).setEmail(open311User.getEmail()).
@@ -285,7 +290,8 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
         }
 
         ServiceRequest serviceRequest = builder.createServiceRequest();
-        int errorCode = Open311Validator.validateServiceRequest(serviceRequest, open311.getOpen311Option().getOpen311Type(), serviceDescription);
+        int errorCode = Open311Validator.validateServiceRequest(serviceRequest,
+                mOpen311.getOpen311Option().getOpen311Type(), serviceDescription);
 
         List<Open311AttributePair> attributes = createOpen311Attributes(serviceDescription);
         serviceRequest.setAttributes(attributes);
@@ -294,12 +300,13 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
             //Start progress
             showProgress(Boolean.TRUE);
 
-            ServiceRequestTask srt = new ServiceRequestTask(open311, serviceRequest, this);
+            ServiceRequestTask srt = new ServiceRequestTask(mOpen311, serviceRequest, this);
             srt.execute();
         } else {
             createToastMessage(Open311Validator.getErrorMessageForServiceRequestByErrorCode(errorCode));
 
-            if (errorCode == Open311Validator.PROBLEM_CODE_USER_NAME || errorCode == Open311Validator.PROBLEM_CODE_USER_LASTNAME ||
+            if (errorCode == Open311Validator.PROBLEM_CODE_USER_NAME ||
+                    errorCode == Open311Validator.PROBLEM_CODE_USER_LASTNAME ||
                     errorCode == Open311Validator.PROBLEM_CODE_USER_EMAIL)
                 createContactInfoFragment();
         }
@@ -327,7 +334,7 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
      * @return List of code value pair of attributes
      */
     private List<Open311AttributePair> createOpen311Attributes(ServiceDescription serviceDescription) {
-        List<Open311AttributePair> attributes = new ArrayList<Open311AttributePair>();
+        List<Open311AttributePair> attributes = new ArrayList<>();
 
         for (Open311Attribute open311Attribute : serviceDescription.getAttributes()) {
 
@@ -382,7 +389,7 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
         Bitmap bitmap = ((BitmapDrawable) issueImage.getDrawable()).getBitmap();
         String path = Environment.getExternalStorageDirectory().toString() + "/" + "Download";
         File file = new File(path, "image.jpg");
-        OutputStream fOut = null;
+        OutputStream fOut;
         fOut = new FileOutputStream(file);
 
         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
@@ -573,5 +580,9 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
 
     private void createContactInfoFragment() {
         ((InfrastructureIssueActivity) getActivity()).createContactInfoFragment();
+    }
+
+    public void setOpen311(Open311 open311) {
+        mOpen311 = open311;
     }
 }

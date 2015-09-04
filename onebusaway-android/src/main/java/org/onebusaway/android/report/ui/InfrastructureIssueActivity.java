@@ -1,5 +1,17 @@
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.io.elements.ObaRoute;
+import org.onebusaway.android.io.elements.ObaStop;
+import org.onebusaway.android.map.MapParams;
+import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
+import org.onebusaway.android.report.connection.ServiceListTask;
+import org.onebusaway.android.report.constants.ReportConstants;
+import org.onebusaway.android.report.ui.util.IssueLocationHelper;
+import org.onebusaway.android.ui.ReportProblemFragmentBase;
+import org.onebusaway.android.ui.ReportStopProblemFragment;
+import org.onebusaway.android.util.LocationUtil;
+
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -14,28 +26,20 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import org.onebusaway.android.R;
-import org.onebusaway.android.io.elements.ObaRoute;
-import org.onebusaway.android.io.elements.ObaStop;
-import org.onebusaway.android.map.MapParams;
-import org.onebusaway.android.map.googlemapsv2.BaseMapFragment;
-import org.onebusaway.android.report.connection.ServicesTask;
-import org.onebusaway.android.report.constants.ReportConstants;
-import org.onebusaway.android.report.open311.models.Service;
-import org.onebusaway.android.report.open311.models.ServiceListResponse;
-import org.onebusaway.android.report.ui.util.IssueLocationHelper;
-import org.onebusaway.android.ui.ReportProblemFragmentBase;
-import org.onebusaway.android.ui.ReportStopProblemFragment;
-import org.onebusaway.android.util.LocationUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import edu.usf.cutr.open311client.Open311;
+import edu.usf.cutr.open311client.Open311Manager;
+import edu.usf.cutr.open311client.models.Service;
+import edu.usf.cutr.open311client.models.ServiceListRequest;
+import edu.usf.cutr.open311client.models.ServiceListResponse;
+
 public class InfrastructureIssueActivity extends BaseReportActivity implements View.OnClickListener,
-        BaseMapFragment.OnFocusChangedListener, ServicesTask.Callback,
+        BaseMapFragment.OnFocusChangedListener, ServiceListTask.Callback,
         ReportProblemFragmentBase.OnProblemReportedListener, IssueLocationHelper.Callback {
 
     /**
@@ -46,8 +50,6 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
     private ImageButton addressSearchButton;
 
     private ImageButton addressRefreshButton;
-
-    private CustomScrollView mainScrollView;
 
     //Map Fragment
     private BaseMapFragment mMapFragment;
@@ -64,13 +66,18 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
     private List<Service> serviceList;
 
     /**
+     * Open311 client
+     */
+    private Open311 mOpen311;
+
+    /**
      * Starts the MapActivity with a particular stop focused with the center of
      * the map at a particular point.
      *
      * @param context The context of the activity.
      * @param intent  The Intent containing focusId, lat, lon of the map
      */
-    public static final void start(Context context, Intent intent) {
+    public static void start(Context context, Intent intent) {
         context.startActivity(makeIntent(context, intent));
     }
 
@@ -81,7 +88,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
      * @param context The context of the activity.
      * @param intent  The Intent containing focusId, lat, lon of the map
      */
-    public static final Intent makeIntent(Context context, Intent intent) {
+    public static Intent makeIntent(Context context, Intent intent) {
         Intent myIntent = new Intent(context, InfrastructureIssueActivity.class);
         myIntent.putExtra(MapParams.STOP_ID, intent.getStringExtra(MapParams.STOP_ID));
         myIntent.putExtra(MapParams.CENTER_LAT, intent.getDoubleExtra(MapParams.CENTER_LAT, 0));
@@ -96,6 +103,8 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.infrastructure_issue);
 
+        setUpOpen311();
+
         setUpProgressBar();
 
         setupMapFragment();
@@ -105,6 +114,13 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
         setupViews();
 
         initLocation();
+    }
+
+    /**
+     * Set default open311 client
+     */
+    private void setUpOpen311() {
+        mOpen311 = Open311Manager.getDefaultOpen311();
     }
 
     /**
@@ -147,7 +163,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
         addressRefreshButton = (ImageButton) findViewById(R.id.ri_refresh_address_button);
         addressRefreshButton.setOnClickListener(this);
 
-        mainScrollView = (CustomScrollView) findViewById(R.id.ri_scrollView);
+        CustomScrollView mainScrollView = (CustomScrollView) findViewById(R.id.ri_scrollView);
         mainScrollView.addInterceptScrollView(findViewById(R.id.ri_frame_map_view));
     }
 
@@ -202,21 +218,23 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
      * @param services ServiceListResponse
      */
     @Override
-    public void onServicesTaskCompleted(ServiceListResponse services) {
+    public void onServicesTaskCompleted(ServiceListResponse services, Open311 open311) {
         //Close progress
         showProgress(Boolean.FALSE);
 
-        List<Service> serviceList = new ArrayList<Service>();
-        serviceList.add(new Service("Issue Category", ReportConstants.DEFAULT_SERVICE));
+        mOpen311 = open311;
+
+        List<Service> serviceList = new ArrayList<>();
         if (services != null && services.isSuccess()) {
             serviceList.addAll(services.getServiceList());
-            if (isCategoryDefinedForRegion(serviceList)) {
+            if (Open311Manager.isZoneManagedByOpen311(serviceList)) {
+                serviceList.add(0, new Service("Issue Category", ReportConstants.DEFAULT_SERVICE));
                 enableOpen311Reporting(serviceList);
             } else {
                 disableOpen311Reporting();
             }
-        } else {
-            Toast.makeText(this, services.getResultDescription(), Toast.LENGTH_LONG).show();
+        } else if (services != null) {
+            disableOpen311Reporting();
         }
 
     }
@@ -236,7 +254,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
 
     /**
      * Called when the issue location changes
-     * Retries Open311 services from current address
+     * Retrieves Open311 services from current address
      *
      * @param location current issue location
      */
@@ -245,8 +263,13 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
         addressEditText.setText(address);
 
         showProgress(Boolean.TRUE);
-        ServicesTask servicesTask = new ServicesTask(location, this);
-        servicesTask.execute();
+
+        ServiceListRequest slr = new ServiceListRequest(location.getLatitude(), location.getLongitude());
+        slr.setAddress(address);
+
+        List<Open311> open311List = Open311Manager.getAllOpen311();
+        ServiceListTask serviceListTask = new ServiceListTask(slr, open311List, this);
+        serviceListTask.execute();
     }
 
     /**
@@ -332,7 +355,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
     /**
      * Shows or hides refresh button for address bar
      *
-     * @param isVisible
+     * @param isVisible true if you want to show refresh button
      */
     private void showRefreshButton(Boolean isVisible) {
         if (isVisible) {
@@ -414,7 +437,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
     }
 
     private void showOpen311ProblemFragment() {
-        Open311ProblemFragment.show(this, R.id.ri_report_stop_problem);
+        Open311ProblemFragment.show(this, R.id.ri_report_stop_problem, mOpen311);
     }
 
     private void removeOpen311ProblemFragment() {

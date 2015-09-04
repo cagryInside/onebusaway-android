@@ -15,18 +15,6 @@
  */
 package org.onebusaway.android.app;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.hardware.GeomagneticField;
-import android.location.Location;
-import android.location.LocationManager;
-import android.preference.PreferenceManager;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -43,11 +31,26 @@ import org.onebusaway.android.util.BuildFlavorUtil;
 import org.onebusaway.android.util.LocationUtil;
 import org.onebusaway.android.util.PreferenceHelp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.hardware.GeomagneticField;
+import android.location.Location;
+import android.location.LocationManager;
+import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import edu.usf.cutr.open311client.Open311Manager;
+import edu.usf.cutr.open311client.models.Open311Option;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -94,6 +97,7 @@ public class Application extends android.app.Application {
 
         initOba();
         initObaRegion();
+        initOpen311(getCurrentRegion());
 
         ObaAnalytics.initAnalytics(this);
         reportAnalytics();
@@ -126,8 +130,10 @@ public class Application extends android.app.Application {
      * location yet.  When trying to get a most recent location in one shot, this method should
      * always be called.
      *
-     * @param cxt The Context being used, or null if one isn't available
-     * @param client The GoogleApiClient being used to obtain fused provider updates, or null if one isn't available
+     * @param cxt    The Context being used, or null if one isn't available
+     * @param client The GoogleApiClient being used to obtain fused provider updates, or null if
+     *               one
+     *               isn't available
      * @return the last known location that the application has seen, or null if we haven't seen a
      * location yet
      */
@@ -279,6 +285,8 @@ public class Application extends android.app.Application {
             ObaApi.getDefaultContext().setRegion(null);
             PreferenceHelp.saveLong(mPrefs, getString(R.string.preference_key_region), -1);
         }
+        // Init the reporting with the new endpoints
+        initOpen311(region);
     }
 
     /**
@@ -425,6 +433,27 @@ public class Application extends android.app.Application {
 
 
         ObaApi.getDefaultContext().setRegion(region);
+    }
+
+    private void initOpen311(ObaRegion region) {
+        if (region != null) {
+            try {
+                String apiKeys[] = region.getOpen311ApiKey().split(";");
+                String urls[] = region.getOpen311Url().split(";");
+                String jurisdictions[] = region.getOpen311JurisdictionId().split(";");
+
+                for (int i = 0; i < apiKeys.length; i++) {
+                    String jurisdictionId = null;
+                    if (!"".equals(jurisdictions[i])) {
+                        jurisdictionId = jurisdictions[i];
+                    }
+                    Open311Option option = new Open311Option(urls[i], apiKeys[i], jurisdictionId);
+                    Open311Manager.initOpen311WithOption(option);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {

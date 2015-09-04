@@ -1,5 +1,7 @@
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.onebusaway.android.R;
 
 /**
  * Created by Cagri Cetin

@@ -16,40 +16,39 @@
 
 package org.onebusaway.android.report.connection;
 
-import android.location.Location;
 import android.os.AsyncTask;
 
-import org.onebusaway.android.app.Application;
-import org.onebusaway.android.report.open311.Open311;
-import org.onebusaway.android.report.open311.Open311Manager;
-import org.onebusaway.android.report.open311.models.Service;
-import org.onebusaway.android.report.open311.models.ServiceDescription;
-import org.onebusaway.android.report.open311.models.ServiceListRequest;
+import edu.usf.cutr.open311client.Open311;
+import edu.usf.cutr.open311client.models.ServiceDescription;
+import edu.usf.cutr.open311client.models.ServiceDescriptionRequest;
 
 /**
  * Async task for getting service description of the given Open311 service
+ *
  * @author Cagri Cetin
  */
 public class ServiceDescriptionTask extends AsyncTask<Void, Integer, ServiceDescription> {
 
-    private Location location;
+    private ServiceDescriptionRequest mServiceDescriptionRequest;
 
-    private Service service;
+    private Open311 mOpen311;
 
     private Callback callback;
 
-    public interface Callback{
+    public interface Callback {
         /**
          * Called when the Open311 ServiceDescriptionTask is complete
+         *
          * @param serviceDescription contains the detailed information of the given service
          */
         void onServiceDescriptionTaskCompleted(ServiceDescription serviceDescription);
     }
 
-    public ServiceDescriptionTask(Location location, Service service, Callback callback) {
-        this.location = location;
-        this.service = service;
+    public ServiceDescriptionTask(ServiceDescriptionRequest serviceDescriptionRequest,
+                                  Open311 open311, Callback callback) {
         this.callback = callback;
+        this.mServiceDescriptionRequest = serviceDescriptionRequest;
+        this.mOpen311 = open311;
     }
 
     @Override
@@ -59,11 +58,7 @@ public class ServiceDescriptionTask extends AsyncTask<Void, Integer, ServiceDesc
 
     @Override
     protected ServiceDescription doInBackground(Void... params) {
-        String jurisdictionId = Application.get().getCurrentRegion().getOpen311JurisdictionId();
-        Open311 open311 = Open311Manager.getOpen311ByJurisdiction(jurisdictionId);
-        ServiceListRequest slr = new ServiceListRequest(location.getLatitude(), location.getLatitude());
-        slr.setServiceCode(service.getService_code());
-        return open311.getServiceDescription(slr);
+        return mOpen311.getServiceDescription(mServiceDescriptionRequest);
     }
 
     @Override

@@ -1,5 +1,8 @@
 package org.onebusaway.android.report.ui;
 
+import org.onebusaway.android.R;
+import org.onebusaway.android.report.ui.adapter.ImageAdapter;
+
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,9 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import org.onebusaway.android.R;
-import org.onebusaway.android.report.ui.adapter.ImageAdapter;
 
 public class TutorialFragment extends BaseReportFragment implements View.OnClickListener, ViewPager.OnPageChangeListener {
 

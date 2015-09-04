@@ -27,8 +27,6 @@ public class ReportConstants {
     public static int GALLERY_INTENT = 2;
 
     //Map default values
-    public static final long MAP_MIN_TIME = 400;
-    public static final float MAP_MIN_DISTANCE = 100;
     public static final String DEFAULT_SERVICE = "default";
 
     //Preferences keys
@@ -39,5 +37,4 @@ public class ReportConstants {
 
     public static final String TAG_REGION_VALIDATE_DIALOG = "1";
     public static final String TAG_CONTACT_INFO_FRAGMENT = "2";
-    public static final String TAG_ISSUE_REPORT_FRAGMENT = "3";
 }
