@@ -7,7 +7,7 @@
 
     <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="120dp" android:id="@+id/relativeLayout">
+            android:layout_height="110dp" android:id="@+id/relativeLayout">
 
         <TextView
                 android:id="@+id/ricsi_text"
@@ -18,7 +18,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:maxLines="2"
                 android:layout_alignParentStart="true"/>
 

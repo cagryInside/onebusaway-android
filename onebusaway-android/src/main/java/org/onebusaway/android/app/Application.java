@@ -436,6 +436,11 @@ public class Application extends android.app.Application {
     }
 
     private void initOpen311(ObaRegion region) {
+        if (BuildConfig.DEBUG) {
+            Open311Manager.setDebugMode(true);
+            Open311Manager.setDryRun(true);
+        }
+
         if (region != null) {
             try {
                 String apiKeys[] = region.getOpen311ApiKey().split(";");
@@ -454,7 +459,7 @@ public class Application extends android.app.Application {
                 e.printStackTrace();
             }
         } else {
-            // TODO: remove open311 endoint
+           Open311Manager.clearOpen311();
         }
     }
 
