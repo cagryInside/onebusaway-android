@@ -227,7 +227,7 @@ public class InfrastructureIssueActivity extends BaseReportActivity implements V
         List<Service> serviceList = new ArrayList<>();
         if (services != null && services.isSuccess()) {
             serviceList.addAll(services.getServiceList());
-            if (Open311Manager.isZoneManagedByOpen311(serviceList)) {
+            if (Open311Manager.isAreaManagedByOpen311(serviceList)) {
                 serviceList.add(0, new Service("Issue Category", ReportConstants.DEFAULT_SERVICE));
                 enableOpen311Reporting(serviceList);
             } else {

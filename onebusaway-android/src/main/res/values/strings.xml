@@ -474,11 +474,13 @@
 
     <!-- report issue types screen-->
     <string name="rt_infrastructure_problem">Report an Infrastructure Issue</string>
+    <string name="rt_customer_service">Contact Customer Service</string>
     <string name="rt_stop_problem">Report a Bus Stop Problem</string>
     <string name="rt_arrival_problem">Report Arrival Time Problem</string>
     <string name="rt_app_feedback">Send App Feedback</string>
     <string name="rt_ideas">Ideas For New Features</string>
     <string name="rt_message_infrastructure_problem">Missing bus stop, broken bench, etc.</string>
+    <string name="rt_message_customer_service">Driver compliments and complaints, lost &amp; found, etc.</string>
     <string name="rt_message_stop_problem">Wrong bus stop, etc.</string>
     <string name="rt_message_arrival_problem">Late bus, early bus, etc.</string>
     <string name="rt_message_app_feedback">App crash, bugs.</string>

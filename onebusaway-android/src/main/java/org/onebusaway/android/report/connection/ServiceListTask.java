@@ -72,7 +72,7 @@ public class ServiceListTask extends AsyncTask<Void, Integer, ServiceListRespons
             if (i + 1 == open311List.size()) {
                 return slr;
             } else if (slr != null && slr.isSuccess() &&
-                    Open311Manager.isZoneManagedByOpen311(slr.getServiceList())) {
+                    Open311Manager.isAreaManagedByOpen311(slr.getServiceList())) {
                 return slr;
             }
         }

@@ -1,3 +1,18 @@
+/*
+* Copyright (C) 2014 University of South Florida (sjbarbeau@gmail.com)
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package org.onebusaway.android.report.ui;
 
 import org.onebusaway.android.R;
@@ -15,7 +30,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class TutorialFragment extends BaseReportFragment implements View.OnClickListener, ViewPager.OnPageChangeListener {
+public class TutorialFragment extends BaseReportFragment implements
+        View.OnClickListener, ViewPager.OnPageChangeListener {
 
     public static final String STRING_RESOURCE_ID = "stringResource";
     public static final String IMAGE_RESOURCE_ID = "imageResource";
@@ -38,6 +54,11 @@ public class TutorialFragment extends BaseReportFragment implements View.OnClick
         imageArrayResourceId = getArguments().getInt(IMAGE_RESOURCE_ID, -1);
 
         return inflater.inflate(R.layout.report_stop_problem_tutorial, null, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

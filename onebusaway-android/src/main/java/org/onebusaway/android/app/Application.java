@@ -453,6 +453,8 @@ public class Application extends android.app.Application {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            // TODO: remove open311 endoint
         }
     }
 

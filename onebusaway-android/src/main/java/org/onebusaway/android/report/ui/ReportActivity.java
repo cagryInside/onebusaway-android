@@ -21,6 +21,7 @@ import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
 import org.onebusaway.android.map.MapParams;
 import org.onebusaway.android.report.constants.ReportConstants;
+import org.onebusaway.android.report.ui.dialog.CustomerServiceDialog;
 import org.onebusaway.android.report.ui.dialog.RegionValidateDialog;
 import org.onebusaway.android.ui.PreferencesActivity;
 
@@ -112,8 +113,13 @@ public class ReportActivity extends BaseReportActivity {
         InfrastructureIssueActivity.start(this, getIntent());
     }
 
+    public void createCustomerServiceFragment() {
+//        setFragment(new CustomerServiceFragment(), R.id.r_fragment_layout).commit();
+        CustomerServiceDialog csd = new CustomerServiceDialog();
+        csd.show(getSupportFragmentManager(), ReportConstants.TAG_CUSTOMER_SERVICE_FRAGMENT);
+    }
+
     public void createBusStopTutorialFragment() {
-        showProgress(Boolean.TRUE);
         TutorialFragment tutorialFragment = new TutorialFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(TutorialFragment.STRING_RESOURCE_ID, R.array.report_stop_issue_tutorial_desc);
@@ -124,7 +130,6 @@ public class ReportActivity extends BaseReportActivity {
 
     @Override
     public void onBackPressed() {
-
         int count = getSupportFragmentManager().getBackStackEntryCount();
         if (count == 0) {
             super.onBackPressed();

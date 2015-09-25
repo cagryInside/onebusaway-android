@@ -20,22 +20,15 @@ import org.onebusaway.android.app.Application;
 import org.onebusaway.android.io.elements.ObaRegion;
 import org.onebusaway.android.report.ui.adapter.ReportTypeListAdapter;
 import org.onebusaway.android.report.ui.model.ReportTypeItem;
+import org.onebusaway.android.util.UIHelp;
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,43 +87,6 @@ public class ReportTypeListFragment extends ListFragment implements AdapterView.
         return !(region == null || region.getContactEmail() == null);
     }
 
-    private void goToContactEmail(Context ctxt) {
-        PackageManager pm = ctxt.getPackageManager();
-        PackageInfo appInfo;
-        try {
-            appInfo = pm.getPackageInfo(ctxt.getPackageName(),
-                    PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            // Do nothing, perhaps we'll get to show it again? Or never.
-            return;
-        }
-        ObaRegion region = Application.get().getCurrentRegion();
-        if (region == null) {
-            return;
-        }
-
-        final String body = ctxt.getString(R.string.bug_report_body,
-                appInfo.versionName,
-                Build.MODEL,
-                Build.VERSION.RELEASE,
-                Build.VERSION.SDK_INT,
-                locationString);
-        Intent send = new Intent(Intent.ACTION_SEND);
-        send.putExtra(Intent.EXTRA_EMAIL,
-                new String[]{region.getContactEmail()});
-        send.putExtra(Intent.EXTRA_SUBJECT,
-                ctxt.getString(R.string.bug_report_subject));
-        send.putExtra(Intent.EXTRA_TEXT, body);
-        send.setType("message/rfc822");
-        try {
-            ctxt.startActivity(Intent.createChooser(send,
-                    ctxt.getString(R.string.bug_report_subject)));
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(ctxt, R.string.bug_report_error, Toast.LENGTH_LONG)
-                    .show();
-        }
-    }
-
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         ReportTypeItem rti = (ReportTypeItem) getListView().getItemAtPosition(i);
@@ -139,21 +95,29 @@ public class ReportTypeListFragment extends ListFragment implements AdapterView.
         } else if (getString(R.string.rt_stop_problem).equals(rti.getTitle())) {
             ((ReportActivity) getActivity()).createBusStopTutorialFragment();
         } else if (getString(R.string.rt_arrival_problem).equals(rti.getTitle())) {
-            //Report bus stop issue
-            ((ReportActivity) getActivity()).showProgress(Boolean.TRUE);
+            // Report bus stop issue
             ((ReportActivity) getActivity()).createBusStopTutorialFragment();
         } else if (getString(R.string.rt_app_feedback).equals(rti.getTitle())) {
-            //Send App feedback
-            goToContactEmail(getActivity());
+            // Send App feedback
+            ObaRegion region = Application.get().getCurrentRegion();
+            if (region == null) {
+                return;
+            }
+            UIHelp.sendEmail(getActivity(), region.getContactEmail(), locationString);
         } else if (getString(R.string.rt_ideas).equals(rti.getTitle())) {
-            //Direct to ideascale website
+            // Direct to ideascale website
             goToIdeaScale();
+        } else if (getString(R.string.rt_customer_service).equals(rti.getTitle())) {
+            goToCustomerServices();
         }
     }
 
+    private void goToCustomerServices() {
+        ((ReportActivity) getActivity()).createCustomerServiceFragment();
+    }
+
     private void goToIdeaScale() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.ideascale_url)));
-        startActivity(intent);
+        UIHelp.goToUrl(getActivity(), getString(R.string.ideascale_url));
     }
 
     private Boolean isOpen311Active() {

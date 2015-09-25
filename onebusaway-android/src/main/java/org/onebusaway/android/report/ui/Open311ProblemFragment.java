@@ -272,7 +272,7 @@ public class Open311ProblemFragment extends BaseReportFragment implements View.O
 
         ServiceRequest.Builder builder = new ServiceRequest.Builder();
         builder.setJurisdiction_id(mOpen311.getJurisdiction()).setService_code(service.getService_code()).
-                setService_name(service.getService_name()).setApi_key(mOpen311.getApiKey()).
+                setService_name(service.getService_name()).
                 setLat(issueLocationHelper.getIssueLocation().getLatitude()).
                 setLang(issueLocationHelper.getIssueLocation().getLongitude()).setSummary(null).
                 setDescription(description).setEmail(open311User.getEmail()).
