@@ -7,7 +7,7 @@
 
     <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="110dp" android:id="@+id/relativeLayout">
+            android:layout_height="100dp" android:id="@+id/relativeLayout">
 
         <TextView
                 android:id="@+id/ricsi_text"
@@ -40,14 +40,13 @@
                     android:padding="5dp"
                     android:adjustViewBounds= "true"
                     android:scaleType="fitCenter"
-                    android:id="@+id/ricsi_phone"
-                    android:src="@drawable/ic_customer_service_phone"
+                    android:id="@+id/ricsi_email"
+                    android:src="@drawable/ic_customer_service_email"
                     android:background="?attr/selectableItemBackground"
                     android:layout_alignParentBottom="true"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    ></ImageButton>
+                    android:layout_marginRight="16dp"></ImageButton>
             <ImageButton
                     android:maxHeight="28dp"
                     android:maxWidth="28dp"
@@ -58,13 +57,14 @@
                     android:padding="5dp"
                     android:adjustViewBounds= "true"
                     android:scaleType="fitCenter"
-                    android:id="@+id/ricsi_email"
-                    android:src="@drawable/ic_customer_service_email"
+                    android:id="@+id/ricsi_phone"
+                    android:src="@drawable/ic_customer_service_phone"
                     android:background="?attr/selectableItemBackground"
                     android:layout_alignParentBottom="true"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"></ImageButton>
+                    android:layout_marginRight="16dp"
+                    ></ImageButton>
             <ImageButton
                     android:maxHeight="28dp"
                     android:maxWidth="28dp"

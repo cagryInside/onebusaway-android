@@ -441,22 +441,13 @@ public class Application extends android.app.Application {
             Open311Manager.setDryRun(true);
         }
 
-        if (region != null) {
-            try {
-                String apiKeys[] = region.getOpen311ApiKey().split(";");
-                String urls[] = region.getOpen311Url().split(";");
-                String jurisdictions[] = region.getOpen311JurisdictionId().split(";");
-
-                for (int i = 0; i < apiKeys.length; i++) {
-                    String jurisdictionId = null;
-                    if (!"".equals(jurisdictions[i])) {
-                        jurisdictionId = jurisdictions[i];
-                    }
-                    Open311Option option = new Open311Option(urls[i], apiKeys[i], jurisdictionId);
-                    Open311Manager.initOpen311WithOption(option);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (region != null && region.getOpen311Servers() != null) {
+            for (ObaRegion.Open311Servers open311Server : region.getOpen311Servers()) {
+                String jurisdictionId = open311Server.getJuridisctionId();
+                Open311Option option = new Open311Option(open311Server.getBaseUrl(),
+                        open311Server.getApiKey(),
+                        "".equals(jurisdictionId) ? null : jurisdictionId);
+                Open311Manager.initOpen311WithOption(option);
             }
         } else {
            Open311Manager.clearOpen311();
