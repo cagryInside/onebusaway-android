@@ -600,7 +600,7 @@ public class RegionUtils {
     private static ContentValues toContentValues(ObaRegion region) {
         ContentValues values = new ContentValues();
         values.put(ObaContract.Regions._ID, region.getId());
-        values.put(ObaContract.Regions.NAME, region.getName());
+            values.put(ObaContract.Regions.NAME, region.getName());
         String obaUrl = region.getObaBaseUrl();
         values.put(ObaContract.Regions.OBA_BASE_URL, obaUrl != null ? obaUrl : "");
         String siriUrl = region.getSiriBaseUrl();

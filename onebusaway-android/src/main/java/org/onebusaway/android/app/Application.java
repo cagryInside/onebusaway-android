@@ -41,6 +41,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.security.MessageDigest;
@@ -446,7 +447,7 @@ public class Application extends android.app.Application {
                 String jurisdictionId = open311Server.getJuridisctionId();
                 Open311Option option = new Open311Option(open311Server.getBaseUrl(),
                         open311Server.getApiKey(),
-                        "".equals(jurisdictionId) ? null : jurisdictionId);
+                        TextUtils.isEmpty(jurisdictionId) ? null : jurisdictionId);
                 Open311Manager.initOpen311WithOption(option);
             }
         } else {
