@@ -199,6 +199,7 @@ public class SimpleArrivalListFragment extends Fragment
             if (arrivalInfo.getShortName().length() > 3 && arrivalInfo.getShortName().length() < 6) {
                 route.setTextSize(24);
             }
+            
             destination.setText(MyTextUtils.toTitleCase(arrivalInfo.getHeadsign()));
             status.setText(stopInfo.getStatusText());
 
