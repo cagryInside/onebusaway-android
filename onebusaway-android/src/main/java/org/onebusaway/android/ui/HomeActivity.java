@@ -112,6 +112,7 @@ public class HomeActivity extends AppCompatActivity
          * initialized
          */
         int getPanelHeightPixels();
+
     }
 
     public static final String TWITTER_URL = "http://mobile.twitter.com/onebusaway";
